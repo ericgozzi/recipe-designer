@@ -34,9 +34,7 @@ export const CATEGORIES = [
 export const CATEGORY_KEYS = CATEGORIES.map((c) => c.key);
 export const categoryByKey = (key) => CATEGORIES.find((c) => c.key === key) || null;
 
-// Categories of the built-in presets.
+// Category of the example recipe.
 export const PRESET_CATEGORY = {
   carbonara: 'pastaRisotto',
-  cookies: 'desserts',
-  tiramisu: 'desserts',
 };

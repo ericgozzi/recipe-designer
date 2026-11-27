@@ -1,27 +1,11 @@
 <script setup>
-import { computed, ref } from 'vue';
+import { ref } from 'vue';
 import { FilePlus, Workflow, LayoutGrid } from 'lucide-vue-next';
-import { state, t, loadPreset } from '../store.js';
-import { PRESETS } from '../data/presets.js';
+import { state, t } from '../store.js';
 import LangMenu from './LangMenu.vue';
 import NewRecipeModal from './NewRecipeModal.vue';
-import { CATEGORIES, PRESET_CATEGORY } from '../data/categories.js';
-
-// Preset menu grouped by category, in category order.
-const presetGroups = computed(() =>
-  CATEGORIES.map((c) => ({ key: c.key, presets: presetKeys.filter((p) => PRESET_CATEGORY[p] === c.key) })).filter((g) => g.presets.length)
-);
 
 const showNew = ref(false);
-
-const presetKeys = Object.keys(PRESETS);
-const presetValue = computed(() => state.currentPresetKey || '');
-
-function onPresetChange(e) {
-  const ok = loadPreset(e.target.value);
-  // Cancelled: put the select back on the current recipe.
-  if (!ok) e.target.value = presetValue.value;
-}
 </script>
 
 <template>
@@ -39,23 +23,17 @@ function onPresetChange(e) {
     </div>
 
     <nav class="segmented tabs" aria-label="Views">
-      <button type="button" :class="{ active: state.activeTab === 'graph' }" @click="state.activeTab = 'graph'">
+      <button type="button" :aria-label="t('tabGraph')" :class="{ active: state.activeTab === 'graph' }" @click="state.activeTab = 'graph'">
         <Workflow :size="14" />
-        {{ t('tabGraph') }}
+        <span class="tab-label">{{ t('tabGraph') }}</span>
       </button>
-      <button type="button" :class="{ active: state.activeTab === 'grid' }" @click="state.activeTab = 'grid'">
+      <button type="button" :aria-label="t('tabGrid')" :class="{ active: state.activeTab === 'grid' }" @click="state.activeTab = 'grid'">
         <LayoutGrid :size="14" />
-        {{ t('tabGrid') }}
+        <span class="tab-label">{{ t('tabGrid') }}</span>
       </button>
     </nav>
 
     <div class="actions">
-      <select class="select preset-select" :value="presetValue" aria-label="Recipe presets" @change="onPresetChange">
-        <option v-if="!state.currentPresetKey" value="" disabled>{{ t('customRecipe') }}</option>
-        <optgroup v-for="g in presetGroups" :key="g.key" :label="t('categories')[g.key]">
-          <option v-for="key in g.presets" :key="key" :value="key">{{ t('presetNames')[key] }}</option>
-        </optgroup>
-      </select>
       <button type="button" class="knob new-btn" data-tip-pos="bottom" :data-tip="t('newBtn').replace(/^\+\s*/, '')" :aria-label="t('newBtn')" @click="showNew = true">
         <FilePlus :size="16" />
       </button>
@@ -135,11 +113,29 @@ function onPresetChange(e) {
   flex-wrap: wrap;
   gap: 10px;
 }
-.preset-select {
-  width: auto;
-  max-width: 250px;
-  height: 36px;
-  font-weight: 600;
-}
 
+
+/* Phones: logo only, icon-only tabs, everything on one row */
+@media (max-width: 640px) {
+  .app-header {
+    flex-wrap: nowrap;
+    gap: 10px;
+    padding: 0;
+  }
+  .brand {
+    flex: 0 0 auto;
+  }
+  .brand-text {
+    display: none;
+  }
+  .tab-label {
+    display: none;
+  }
+  .tabs button {
+    padding: 0 14px;
+  }
+  .actions {
+    gap: 8px;
+  }
+}
 </style>

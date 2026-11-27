@@ -573,3 +573,33 @@ button.pill {
     display: none;
   }
 }
+
+/* ========================================================================== */
+/* Touch screens                                                              */
+/* ========================================================================== */
+@media (pointer: coarse) {
+  /* iOS zooms into any field under 16px; keep them at 16px */
+  input,
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+  /* Bigger targets for fingers */
+  .knob-sm {
+    width: 32px;
+    height: 32px;
+  }
+  .icon-btn {
+    width: 32px;
+    height: 32px;
+  }
+  .segmented button {
+    height: 32px;
+  }
+}
+/* Hover tooltips would stick after a tap on touch screens */
+@media (hover: none) {
+  [data-tip]::after {
+    display: none;
+  }
+}

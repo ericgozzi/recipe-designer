@@ -22,7 +22,9 @@ const ADD_KEYS = [
   { type: 'output', label: 'addOut' },
 ];
 
-defineEmits(['json']);
+// 'tap' = a node or wire was tapped/clicked without dragging (phones open the inspector)
+const emit = defineEmits(['json', 'tap']);
+const TAP_SLOP = 5; // px a pointer may wobble before a press becomes a drag
 
 const NODE_W = 240;
 const NODE_H = 80;
@@ -31,7 +33,7 @@ const viewport = ref(null);
 const stage = ref(null);
 const sizes = reactive({}); // nodeId -> { w, h } measured from the DOM
 const viewportSize = reactive({ w: 1200, h: 800 });
-const drag = reactive({ mode: null, nodeId: null, offX: 0, offY: 0, fromId: null, end: null, targetId: null });
+const drag = reactive({ mode: null, nodeId: null, offX: 0, offY: 0, fromId: null, end: null, targetId: null, sx: 0, sy: 0, moved: false });
 
 const nodesById = computed(() => new Map(state.nodes.map((n) => [n.id, n])));
 
@@ -94,7 +96,7 @@ function addAtView(type) {
 function startNodeDrag(node, e) {
   selectNode(node.id);
   const p = toStage(e);
-  Object.assign(drag, { mode: 'node', nodeId: node.id, offX: p.x - node.x, offY: p.y - node.y });
+  Object.assign(drag, { mode: 'node', nodeId: node.id, offX: p.x - node.x, offY: p.y - node.y, sx: e.clientX, sy: e.clientY, moved: false });
   listen();
 }
 
@@ -112,6 +114,8 @@ function onMove(e) {
   if (drag.mode === 'node') {
     const node = nodesById.value.get(drag.nodeId);
     if (!node) return;
+    if (!drag.moved && Math.hypot(e.clientX - drag.sx, e.clientY - drag.sy) < TAP_SLOP) return;
+    drag.moved = true;
     const p = toStage(e);
     node.x = Math.max(8, Math.round(p.x - drag.offX));
     node.y = Math.max(8, Math.round(p.y - drag.offY));
@@ -124,11 +128,12 @@ function onMove(e) {
 }
 
 function onUp(e) {
+  if (drag.mode === 'node' && !drag.moved && e.type === 'pointerup') emit('tap');
   if (drag.mode === 'wire') {
     const id = nodeIdAt(e);
     if (id && id !== drag.fromId) tryConnectNodes(drag.fromId, id);
   }
-  Object.assign(drag, { mode: null, nodeId: null, fromId: null, end: null, targetId: null });
+  Object.assign(drag, { mode: null, nodeId: null, fromId: null, end: null, targetId: null, moved: false });
   unlisten();
 }
 
@@ -239,7 +244,7 @@ onBeforeUnmount(() => {
             </defs>
             <g v-for="edge in edgePaths" :key="edge.id" class="edge" :class="{ selected: edge.selected }">
               <path :d="edge.d" class="edge-line" :marker-end="edge.selected ? 'url(#arrow-selected)' : undefined" />
-              <path :d="edge.d" class="edge-hit" @pointerdown.stop="selectEdge(edge.id)" />
+              <path :d="edge.d" class="edge-hit" @pointerdown.stop="selectEdge(edge.id); emit('tap')" />
             </g>
             <path v-if="tempWire" :d="tempWire" class="temp-wire" marker-end="url(#arrow-temp)" />
           </svg>
@@ -391,5 +396,25 @@ onBeforeUnmount(() => {
   max-width: 320px;
   background: var(--body);
   box-shadow: var(--raise-sm);
+}
+
+/* Phones / portrait tablets: one toolbar row that scrolls sideways */
+@media (max-width: 899px) {
+  .toolbar {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding: 10px 10px 12px;
+    scrollbar-width: none;
+  }
+  .toolbar::-webkit-scrollbar {
+    display: none;
+  }
+  .cluster {
+    flex-wrap: nowrap;
+    flex-shrink: 0;
+  }
+  .sizer {
+    margin-bottom: 90px; /* keep the last nodes reachable above the dock */
+  }
 }
 </style>

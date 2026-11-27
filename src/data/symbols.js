@@ -19,9 +19,7 @@ export const SYMBOLS = [
 
 export const SYMBOL_KEYS = SYMBOLS.map((s) => s.key);
 
-// Defaults for the built-in presets.
+// Defaults for the example recipe.
 export const PRESET_SYMBOLS = {
   carbonara: ['pork', 'eggs'],
-  cookies: ['vegetarian', 'eggs'],
-  tiramisu: ['vegetarian', 'eggs'],
 };

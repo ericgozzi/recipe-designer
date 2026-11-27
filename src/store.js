@@ -469,6 +469,8 @@ export function importJson(raw) {
 }
 
 export function boot() {
+  // Phones start zoomed out so more of the graph fits on screen.
+  if (window.innerWidth < 640) state.zoom = 0.75;
   const sources = [() => localStorage.getItem(STORAGE_KEY)];
   for (const read of sources) {
     try {

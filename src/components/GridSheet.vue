@@ -58,7 +58,9 @@ const displayScale = computed(() => {
   const pageW = page.value.w * PX_PER_MM;
   const pageH = page.value.h * PX_PER_MM;
   const byHeight = (Math.max(320, viewHeight.value - 250) / (PAPER.A4.h * PX_PER_MM)) * pageH;
-  const display = Math.min(stageWidth.value || pageW, pageW * 1.2, (byHeight * pageW) / pageH);
+  let display = Math.min(stageWidth.value || pageW, pageW * 1.2, (byHeight * pageW) / pageH);
+  // On narrow screens keep the page readable and let it scroll sideways instead.
+  if ((stageWidth.value || pageW) < 700) display = Math.max(display, pageW * 0.6);
   return display / pageW;
 });
 
@@ -218,8 +220,10 @@ onBeforeUnmount(() => {
 /* ---------- Desk and paper ---------- */
 .paper-stage {
   display: flex;
-  justify-content: center;
+  justify-content: safe center;
   min-width: 0;
+  overflow-x: auto;
+  padding: 0 2px 24px; /* room for the paper shadow inside the scroll area */
 }
 /* "Graphite" palette: near-monochrome warm greys with a single orange accent
    that marks the final dish and time/heat tags. Light on ink when printed. */
@@ -549,6 +553,8 @@ onBeforeUnmount(() => {
 @media print {
   .paper-stage {
     display: block;
+    padding: 0;
+    overflow: visible;
   }
   .paper {
     width: var(--page-w) !important;

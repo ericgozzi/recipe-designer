@@ -185,4 +185,19 @@ function exportPdf() {
     overflow: visible;
   }
 }
+
+@media (max-width: 640px) {
+  .controls {
+    padding: 12px;
+    gap: 12px;
+  }
+  .group {
+    gap: 12px;
+    width: 100%;
+  }
+  .title-input {
+    flex: 1 1 100%;
+    width: auto;
+  }
+}
 </style>

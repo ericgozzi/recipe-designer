@@ -83,4 +83,11 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown));
     display: block !important;
   }
 }
+
+@media (max-width: 640px) {
+  .app-shell {
+    gap: 10px;
+    padding: 10px 10px 12px;
+  }
+}
 </style>

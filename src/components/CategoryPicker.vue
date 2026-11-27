@@ -103,7 +103,7 @@ onBeforeUnmount(() => document.removeEventListener('pointerdown', onDocPointer))
   left: 0;
   top: calc(100% + 10px);
   z-index: 70;
-  width: 380px;
+  width: min(380px, calc(100vw - 40px));
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 4px;
