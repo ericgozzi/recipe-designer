@@ -26,7 +26,8 @@ export const state = reactive({
   isCustomModified: false,
   title: '',
   baseServings: 4,
-  yieldMultiplier: 1,
+  // Servings the user wants to cook for; null = same as baseServings (no scaling).
+  targetServings: null,
   preStartSteps: [],
   nodes: [],
   edges: [],
@@ -58,10 +59,21 @@ export function servings() {
   return Number.isFinite(n) && n > 0 ? n : 1;
 }
 
-/** Ingredient amount as shown on the canvas and the sheet, scaled by the yield multiplier. */
+/** Servings shown on the sheet: what the user cooks for (defaults to what the recipe is written for). */
+export function targetServings() {
+  const n = Number(state.targetServings);
+  return Number.isFinite(n) && n > 0 ? n : servings();
+}
+
+/** Factor applied to every ingredient amount: cook-for servings ÷ recipe servings. */
+export function scaleFactor() {
+  return targetServings() / servings();
+}
+
+/** Ingredient amount as shown on the canvas and the sheet, scaled to the cook-for servings. */
 export function amountLabel(node) {
   if (node.unit === 'qb') return t('unitQb');
-  return `${formatQuantity((Number(node.qty) || 0) * state.yieldMultiplier)} ${node.unit || ''}`.trim();
+  return `${formatQuantity((Number(node.qty) || 0) * scaleFactor())} ${node.unit || ''}`.trim();
 }
 
 export function nodeLabel(node) {
@@ -124,7 +136,7 @@ function resetView(nodes, edges) {
   state.edges = edges;
   state.selectedNodeId = nodes[0] ? nodes[0].id : null;
   state.selectedEdgeId = null;
-  state.yieldMultiplier = 1;
+  state.targetServings = null;
   state.completedCells = new Set();
 }
 
@@ -397,7 +409,7 @@ function snapshot() {
     lang: state.lang,
     currentPresetKey: state.currentPresetKey,
     isCustomModified: state.isCustomModified,
-    yieldMultiplier: state.yieldMultiplier,
+    targetServings: state.targetServings,
     paperSize: state.paperSize,
     monoInk: state.monoInk,
   };
@@ -455,7 +467,9 @@ function restore(saved) {
   state.category = CATEGORY_KEYS.includes(saved.category) ? saved.category : null;
   state.symbols = Array.isArray(saved.symbols) ? SYMBOL_KEYS.filter((k) => saved.symbols.includes(k)) : [];
   resetView(nodes, sanitizeEdges(saved.edges, nodes));
-  if ([0.5, 1, 2].includes(saved.yieldMultiplier)) state.yieldMultiplier = saved.yieldMultiplier;
+  if (Number(saved.targetServings) > 0) state.targetServings = Number(saved.targetServings);
+  // Older saves stored a 0.5× / 1× / 2× multiplier instead.
+  else if ([0.5, 2].includes(saved.yieldMultiplier)) state.targetServings = servings() * saved.yieldMultiplier;
   if (PAPER[saved.paperSize]) state.paperSize = saved.paperSize;
   if (typeof saved.monoInk === 'boolean') state.monoInk = saved.monoInk;
 }
@@ -465,7 +479,7 @@ export function importJson(raw) {
   if (!parsed || !Array.isArray(parsed.nodes) || !Array.isArray(parsed.edges)) {
     throw new Error('JSON must contain "nodes" and "edges" arrays.');
   }
-  restore({ ...parsed, lang: state.lang, currentPresetKey: null, isCustomModified: true, yieldMultiplier: 1 });
+  restore({ ...parsed, lang: state.lang, currentPresetKey: null, isCustomModified: true, targetServings: null });
 }
 
 export function boot() {

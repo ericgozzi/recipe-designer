@@ -1,6 +1,6 @@
 <script setup>
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
-import { state, t, servings, toggleCellCompleted, amountLabel, PAPER } from '../store.js';
+import { state, t, targetServings, toggleCellCompleted, amountLabel, PAPER } from '../store.js';
 import { compileGridMatrix } from '../lib/grid.js';
 import { formatQuantity } from '../lib/format.js';
 import PillTag from './PillTag.vue';
@@ -12,7 +12,7 @@ const sheetEl = ref(null);
 
 const compiled = computed(() => (state.nodes.length ? compileGridMatrix(state.nodes, state.edges) : null));
 const preSteps = computed(() => state.preStartSteps.map((s) => s.trim()).filter(Boolean));
-const yieldNum = computed(() => formatQuantity(servings() * state.yieldMultiplier));
+const yieldNum = computed(() => formatQuantity(targetServings()));
 
 function colTitle(c) {
   return c === 0 ? t('colIngredients') : `${t('colStage')} ${String(c).padStart(2, '0')}`;
@@ -110,7 +110,7 @@ function measureFit() {
 }
 
 watch(
-  () => [compiled.value, preSteps.value, state.title, state.category, state.symbols.length, yieldNum.value, state.paperSize, state.lang, state.activeTab, state.yieldMultiplier],
+  () => [compiled.value, preSteps.value, state.title, state.category, state.symbols.length, yieldNum.value, state.paperSize, state.lang, state.activeTab, state.targetServings],
   () => nextTick(measureFit),
   { flush: 'post' }
 );

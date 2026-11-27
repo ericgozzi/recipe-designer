@@ -1,19 +1,29 @@
 <script setup>
 import { computed } from 'vue';
-import { Minus, Plus, FileDown, Users, Contrast } from 'lucide-vue-next';
-import { state, t, setTitle, setCategory, servings, PAPER } from '../store.js';
+import { Minus, Plus, FileDown, Users, Contrast, RotateCcw } from 'lucide-vue-next';
+import { state, t, setTitle, setCategory, servings, targetServings, scaleFactor, PAPER } from '../store.js';
+import { formatQuantity } from '../lib/format.js';
 import GridSheet from './GridSheet.vue';
 import CategoryPicker from './CategoryPicker.vue';
 
 const title = computed({ get: () => state.title, set: setTitle });
 const category = computed({ get: () => state.category, set: setCategory });
-const yieldTitle = computed(() => t('yieldLabel').replace(/[:：\s]+$/, ''));
 
-function normalizeServings() {
+// "Recipe for" is what the ingredient amounts are written for; "Cook for" is how many
+// people the user is cooking for. Every amount is scaled by cookFor ÷ recipeFor.
+const cookFor = computed(() => targetServings());
+const isScaled = computed(() => cookFor.value !== servings());
+const factorLabel = computed(() => formatQuantity(scaleFactor()));
+
+function normalizeBase() {
   state.baseServings = servings();
 }
-function stepServings(delta) {
-  state.baseServings = Math.max(1, Math.round(servings()) + delta);
+function setCookFor(value) {
+  const n = Math.min(200, Math.max(1, Math.round(Number(value)) || servings()));
+  state.targetServings = n === servings() ? null : n;
+}
+function stepCookFor(delta) {
+  setCookFor(Math.round(cookFor.value) + delta);
 }
 
 // The browser's print engine produces a crisp vector PDF (and handles every
@@ -37,35 +47,52 @@ function exportPdf() {
         <input v-model="title" type="text" class="input title-input" aria-label="Recipe title" />
         <CategoryPicker v-model="category" />
 
-        <div class="stepper" data-tip-pos="bottom" :data-tip="yieldTitle">
-          <Users :size="16" class="ctl-icon" />
-          <button type="button" class="knob knob-sm" :disabled="servings() <= 1" aria-label="−" @click="stepServings(-1)">
-            <Minus :size="12" />
-          </button>
-          <input
-            v-model.number="state.baseServings"
-            type="number"
-            min="1"
-            max="200"
-            class="lcd servings-input"
-            :aria-label="yieldTitle"
-            @blur="normalizeServings"
-          />
-          <button type="button" class="knob knob-sm" aria-label="+" @click="stepServings(1)">
-            <Plus :size="12" />
-          </button>
-        </div>
+        <div class="servings">
+          <label class="field" data-tip-pos="bottom" :data-tip="t('recipeForHint')">
+            <span class="field-label">{{ t('recipeFor') }}</span>
+            <input
+              v-model.number="state.baseServings"
+              type="number"
+              min="1"
+              max="200"
+              class="lcd servings-input"
+              :aria-label="t('recipeFor')"
+              @blur="normalizeBase"
+            />
+          </label>
 
-        <div class="segmented">
-          <button
-            v-for="m in [0.5, 1, 2]"
-            :key="m"
-            type="button"
-            :class="{ active: state.yieldMultiplier === m }"
-            @click="state.yieldMultiplier = m"
-          >
-            {{ m }}×
-          </button>
+          <span class="arrow" aria-hidden="true">→</span>
+
+          <div class="field" data-tip-pos="bottom" :data-tip="t('cookForHint')">
+            <Users :size="16" class="ctl-icon" />
+            <span class="field-label">{{ t('cookFor') }}</span>
+            <button type="button" class="knob knob-sm" :disabled="cookFor <= 1" aria-label="−" @click="stepCookFor(-1)">
+              <Minus :size="12" />
+            </button>
+            <input
+              :value="cookFor"
+              type="number"
+              min="1"
+              max="200"
+              class="lcd servings-input"
+              :class="{ scaled: isScaled }"
+              :aria-label="t('cookFor')"
+              @change="setCookFor($event.target.value)"
+            />
+            <button type="button" class="knob knob-sm" aria-label="+" @click="stepCookFor(1)">
+              <Plus :size="12" />
+            </button>
+            <button
+              v-if="isScaled"
+              type="button"
+              class="scale-badge"
+              :data-tip="t('resetScale')"
+              :aria-label="t('resetScale')"
+              @click="state.targetServings = null"
+            >
+              ×{{ factorLabel }}<RotateCcw :size="12" />
+            </button>
+          </div>
         </div>
       </div>
 
@@ -136,18 +163,53 @@ function exportPdf() {
   font-style: italic;
   font-size: 19px;
 }
-.stepper {
+.servings {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+}
+.field {
   display: flex;
   align-items: center;
   gap: 8px;
   height: 36px;
 }
+.field-label {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  white-space: nowrap;
+}
+.arrow {
+  color: var(--ink-3);
+}
+.scale-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 24px;
+  padding: 0 8px;
+  border: none;
+  border-radius: 999px;
+  background: var(--orange);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.servings-input.scaled {
+  color: var(--orange-ink);
+  font-weight: 700;
+}
 .ctl-icon {
   color: var(--ink-3);
   flex-shrink: 0;
 }
-.stepper .ctl-icon {
-  margin-right: 2px;
+.field .ctl-icon {
+  margin-right: -2px;
 }
 .servings-input {
   width: 52px;

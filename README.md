@@ -1,59 +1,136 @@
-# Grid Recipe Generator
+<div align="center">
 
-Build a recipe as a left-to-right flow graph (ingredients → steps → final dish),
-then print it as a compact "grid recipe" sheet with merged cells.
+# 🍝 Grid Recipe Generator
 
-Built with Vue 3 + Vite.
+**Stop reading recipes like novels. See the whole dish at a glance.**
 
-## Develop
+Draw your recipe as a flow (ingredients → steps → dish), and get a beautiful one‑page
+**grid recipe card**, the kind professional kitchens pin to the wall.
+
+[**▶ Try it live**](https://ericgozzi.github.io/recipe-designer/) ·
+[Report a bug](https://github.com/ericgozzi/recipe-designer/issues) ·
+[Suggest a feature](https://github.com/ericgozzi/recipe-designer/issues)
+
+![Vue 3](https://img.shields.io/badge/Vue-3-42b883?logo=vue.js&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-646CFF?logo=vite&logoColor=white)
+![No backend](https://img.shields.io/badge/backend-none-lightgrey)
+![Works offline](https://img.shields.io/badge/works-offline-success)
+![License: MIT](https://img.shields.io/badge/license-MIT-blue)
+
+<!-- Add a screenshot or GIF here, e.g. docs/screenshot.png — it's the single best way to win a visitor over. -->
+
+</div>
+
+---
+
+## Why a grid recipe?
+
+A normal recipe is a wall of text: you read step 7 and scroll back to find how much butter
+step 2 asked for. A **grid recipe** lays everything out in one table: ingredients on the
+left, each column a stage of cooking, and merged cells show exactly which ingredients come
+together in which step.
+
+```
+ INGREDIENTS        │ STAGE 01            │ STAGE 02             │ FINISH
+────────────────────┼─────────────────────┼──────────────────────┼──────────────
+ 200 g guanciale    │ Render until crisp  │                      │
+────────────────────┼─────────────────────┤ Toss off the heat,   │
+ 320 g spaghetti    │ Boil al dente       │ loosen with pasta    │  Carbonara
+────────────────────┼─────────────────────┤ water until glossy   │
+ 4 yolks            │ Whisk with pecorino │                      │
+ 60 g pecorino      │ and black pepper    │                      │
+```
+
+One look tells you what to prep, what runs in parallel, and where it all meets.
+
+## ✨ Features
+
+- 🔀 **Visual flow editor**: drag nodes, wire ingredients into steps and steps into the dish.
+  Invalid wires (cycles, wires into an ingredient) are refused for you.
+- 🧮 **Automatic grid layout**: the graph is compiled into a clean merged-cell table, with
+  shared steps split into aligned rows.
+- 👥 **Cook for any number of people**: set what the recipe is written for and how many
+  you're cooking for; every amount rescales instantly.
+- 🖨️ **Perfect one-page PDFs**: A4 or A5 landscape, always fitted to exactly one page, with a
+  true-to-size preview and an ink-saving black & white mode.
+- ✅ **Cook along**: hover a cell to light up everything that feeds it, click to tick it off.
+- 🏷️ **Categories and symbols**: vegan, gluten-free, spicy and more, printed on the card.
+- 🌍 **7 languages**: English, Français, Italiano, Deutsch, Español, 日本語, Português.
+- 📱 **Desktop, tablet and phone**.
+- 🔒 **Private by design**: no account, no server. Everything is autosaved in your browser,
+  and recipes export/import as plain `.json` files.
+- 📦 **One file**: the build is a single self-contained `index.html` that works offline,
+  straight from disk.
+
+## 🚀 Quick start
+
+Just want to use it? Open the **[live app](https://ericgozzi.github.io/recipe-designer/)**.
+
+Want to hack on it?
 
 ```bash
+git clone https://github.com/ericgozzi/recipe-designer.git
+cd recipe-designer
 npm install
 npm run dev       # http://localhost:5173
 ```
 
-## Build
-
 ```bash
-npm run build     # -> dist/index.html (one self-contained file, works offline)
+npm run build     # -> dist/index.html, one self-contained file
 npm run preview
 ```
 
-The build inlines all JS and CSS into a single `dist/index.html`, so you can open it
-straight from disk.
+## ⌨️ Handy shortcuts
 
-## Deploy to GitHub Pages
+| Action                         | How                                   |
+| ------------------------------ | ------------------------------------- |
+| Connect two nodes              | Drag from a node's blue port to another node |
+| Delete selected node or wire   | `Delete` / `Backspace`                |
+| Clear selection                | `Esc`                                 |
+| Zoom around the cursor         | `Ctrl` + mouse wheel                  |
+| Export a PDF                   | **PDF** button → "Save as PDF"        |
 
-Every push to `main` builds the app and publishes it with
-[.github/workflows/deploy.yml](.github/workflows/deploy.yml).
-One-time setup: in the repository go to **Settings → Pages → Build and deployment** and set
-**Source** to **GitHub Actions**. The site appears at `https://<user>.github.io/<repo>/`.
-
-## Features
-
-- **Flow Graph**: drag nodes, drag from a node's blue port to another node to wire them.
-  Wires that would create a cycle, start from a final dish, or end at an ingredient are refused.
-  - `Delete` / `Backspace` removes the selected node or wire, `Esc` clears the selection.
-  - `Ctrl` + mouse wheel zooms around the cursor.
-- **Grid Recipe**: hover a cell to highlight what feeds it and what it feeds; click to tick it off.
-  Scale the yield (0.5× / 1× / 2×), choose A4 or A5 (always landscape) and export a PDF
-  (the print dialog opens: choose "Save as PDF"). The recipe is always fitted to exactly one page,
-  and the screen shows a true-to-size preview of that page. Optional black & white mode.
-- Each recipe has a category (starters, soups, salads, pasta & risotto, mains, sides, sauces, stocks, doughs, desserts, cakes, breakfast, drinks) and optional symbols (vegan, gluten-free, spicy, pork…), both shown on the printed card.
-- 7 languages (EN, FR, IT, DE, ES, JA, PT). The example recipe re-translates until you edit it.
-- Works on desktop, tablet and phone: on smaller screens the side panels move into a dock at the bottom and open as sheets.
-- Work is autosaved in the browser (localStorage). Export downloads a `.json` file; import accepts a pasted or uploaded `.json`.
-
-## Project layout
+## 🗂️ Project layout
 
 ```
 src/
   App.vue                 shell, keyboard shortcuts
   store.js                reactive state and every action (presets, editing, import, autosave)
-  data/                   translations (i18n.js), presets, units
+  data/                   translations (i18n.js), presets, units, categories, symbols
   lib/grid.js             graph → merged-cell grid compiler, auto-layout
-  lib/typeIcons.js        icon for each node type
-  components/             header, canvas, nodes, inspector, grid sheet, modal, toasts
+  components/             header, canvas, nodes, inspector, grid sheet, modals, toasts
   styles/base.css         design tokens and shared controls
 legacy/                   the original single-file version
 ```
+
+## 🤝 Contributing
+
+Contributions are very welcome, big or small:
+
+- 🐛 **Found a bug?** [Open an issue](https://github.com/ericgozzi/recipe-designer/issues)
+  with steps to reproduce (an exported `.json` recipe helps a lot).
+- 🌐 **Speak another language?** Translations live in [src/data/i18n.js](src/data/i18n.js).
+  Copy the `en` block and translate.
+- 🍲 **Have a great recipe?** Example recipes live in [src/data/presets.js](src/data/presets.js).
+- 💡 **Got an idea?** Open an issue to discuss it, or send a pull request.
+
+To submit a change: fork the repo, create a branch, run `npm run build` to make sure it
+builds, and open a pull request describing what changed and why.
+
+## 🚢 Deploy your own
+
+Every push to `main` builds the app and publishes it to GitHub Pages via
+[.github/workflows/deploy.yml](.github/workflows/deploy.yml). On a fork, go to
+**Settings → Pages → Build and deployment** and set **Source** to **GitHub Actions** once.
+
+Or skip hosting entirely: `npm run build` and share `dist/index.html`.
+
+## 📄 License
+
+[MIT](LICENSE). Use it, fork it, cook with it.
+
+<div align="center">
+
+**If this made your kitchen a little calmer, please ⭐ the repo!**
+
+</div>
