@@ -1,0 +1,4210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Grid Recipe Generator</title>
+
+  <!-- Google Fonts: Inter with clean system fallbacks for offline file:// usage -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Dynamic Print Page Rule Container -->
+  <style id="dynamic-print-page-style">
+    @page {
+      size: A4 landscape;
+      margin: 10mm;
+    }
+  </style>
+
+  <!-- 100% Self-Contained Swiss Graphic Design CSS (Zero External Dependencies) -->
+  <style>
+    :root {
+      --bg-app: #F4F4F5;
+      --bg-surface: #FFFFFF;
+      --bg-subtle: #FAFAFA;
+      --ink-primary: #18181B;
+      --ink-secondary: #52525B;
+      --ink-muted: #71717A;
+      --border-hairline: #18181B;
+      --border-soft: #D4D4D8;
+
+      /* Bauhaus Screen Accents */
+      --yellow-soft: #FEF9C3;
+      --yellow-mid: #FEF08A;
+      --yellow-bold: #FACC15;
+      --blue-soft: #EFF6FF;
+      --blue-mid: #DBEAFE;
+      --blue-bold: #2563EB;
+      --blue-dark: #1E3A8A;
+      --red-soft: #FEF2F2;
+      --red-mid: #FEE2E2;
+      --red-bold: #DC2626;
+      --red-dark: #7F1D1D;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      background-color: var(--bg-app);
+      color: var(--ink-primary);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .tabular-nums {
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* ===================================================================== */
+    /* TOP HEADER BAR (LIGHT SWISS BAUHAUS — NO BLACK BACKGROUNDS)           */
+    /* ===================================================================== */
+    .app-header {
+      background-color: var(--bg-surface);
+      border-bottom: 1px solid var(--border-hairline);
+      padding: 10px 20px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      z-index: 30;
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .bauhaus-mark {
+      display: grid;
+      grid-template-columns: repeat(2, 10px);
+      grid-template-rows: repeat(2, 10px);
+      gap: 2px;
+      padding: 4px;
+      background: #FFFFFF;
+      border: 1px solid var(--border-hairline);
+      flex-shrink: 0;
+    }
+    .bauhaus-mark span {
+      display: block;
+      width: 10px;
+      height: 10px;
+      border: 1px solid var(--border-hairline);
+    }
+    .bm-yellow { background-color: var(--yellow-bold); }
+    .bm-blue { background-color: var(--blue-bold); }
+    .bm-red { background-color: var(--red-bold); }
+    .bm-white { background-color: #FFFFFF; }
+
+    .app-title {
+      margin: 0;
+      font-size: 15px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      line-height: 1.1;
+      color: var(--ink-primary);
+    }
+
+    .app-subtitle {
+      margin: 3px 0 0 0;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--ink-muted);
+    }
+
+    /* Primary Tab Switcher */
+    .tab-nav {
+      display: flex;
+      align-items: center;
+      background-color: #F4F4F5;
+      border: 1px solid var(--border-hairline);
+      padding: 2px;
+      gap: 2px;
+    }
+
+    .tab-btn {
+      padding: 6px 14px;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border: 1px solid transparent;
+      background: transparent;
+      color: #3F3F46;
+      cursor: pointer;
+      transition: background-color 0.12s ease, border-color 0.12s ease;
+    }
+    .tab-btn:hover {
+      background-color: #FFFFFF;
+    }
+    .tab-btn.active {
+      background-color: #FFFFFF;
+      color: var(--ink-primary);
+      border-color: var(--border-hairline);
+    }
+
+    /* Right Header Controls */
+    .header-actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .swiss-select,
+    .swiss-input,
+    .swiss-textarea {
+      font-size: 12px;
+      color: var(--ink-primary);
+      background-color: #FFFFFF;
+      border: 1px solid var(--border-hairline);
+      padding: 6px 10px;
+      outline: none;
+    }
+    .swiss-select {
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .swiss-input:focus,
+    .swiss-textarea:focus,
+    .swiss-select:focus {
+      box-shadow: inset 0 0 0 1px var(--blue-bold);
+    }
+
+    .swiss-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 6px 11px;
+      font-size: 11.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      background-color: #FFFFFF;
+      color: var(--ink-primary);
+      border: 1px solid var(--border-hairline);
+      cursor: pointer;
+      transition: background-color 0.12s ease;
+      white-space: nowrap;
+    }
+    .swiss-btn:hover {
+      background-color: #F4F4F5;
+    }
+
+    .swiss-btn-yellow {
+      background-color: var(--yellow-soft);
+    }
+    .swiss-btn-yellow:hover {
+      background-color: var(--yellow-mid);
+    }
+
+    .swiss-btn-blue {
+      background-color: var(--blue-soft);
+    }
+    .swiss-btn-blue:hover {
+      background-color: var(--blue-mid);
+    }
+
+    .swiss-btn-blue-solid {
+      background-color: var(--blue-bold);
+      color: #FFFFFF;
+    }
+    .swiss-btn-blue-solid:hover {
+      background-color: #1D4ED8;
+    }
+
+    .swiss-btn-red {
+      background-color: var(--red-soft);
+      color: var(--red-dark);
+      border-color: var(--red-bold);
+    }
+    .swiss-btn-red:hover {
+      background-color: var(--red-mid);
+    }
+
+    /* Language Flag Dropdown */
+    .lang-wrapper {
+      position: relative;
+    }
+    .lang-trigger {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      font-size: 12px;
+      font-weight: 700;
+      background-color: #FFFFFF;
+      color: var(--ink-primary);
+      border: 1px solid var(--border-hairline);
+      cursor: pointer;
+    }
+    .lang-trigger:hover {
+      background-color: #FAFAFA;
+    }
+    .lang-menu {
+      position: absolute;
+      right: 0;
+      top: calc(100% + 4px);
+      width: 160px;
+      margin: 0;
+      padding: 3px 0;
+      list-style: none;
+      background-color: #FFFFFF;
+      border: 1px solid var(--border-hairline);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      z-index: 60;
+    }
+    .lang-menu li button {
+      width: 100%;
+      padding: 6px 12px;
+      border: none;
+      background: transparent;
+      text-align: left;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--ink-primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+    }
+    .lang-menu li button:hover {
+      background-color: #F4F4F5;
+    }
+
+    /* ===================================================================== */
+    /* TAB 1: FLOW GRAPH WORKSPACE (3-COLUMN RESPONSIVE LAYOUT)              */
+    /* ===================================================================== */
+    .flow-workspace {
+      flex: 1;
+      display: flex;
+      flex-direction: row;
+      min-height: calc(100vh - 54px);
+      overflow: hidden;
+    }
+
+    /* Left Sidebar: Before You Start */
+    .prestart-sidebar {
+      width: 300px;
+      background-color: var(--bg-subtle);
+      border-right: 1px solid var(--border-hairline);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      z-index: 20;
+    }
+
+    .top-accent-bar {
+      height: 6px;
+      border-bottom: 1px solid var(--border-hairline);
+    }
+    .accent-yellow { background-color: var(--yellow-bold); }
+    .accent-blue { background-color: var(--blue-bold); }
+    .accent-red { background-color: var(--red-bold); }
+
+    .panel-header {
+      padding: 10px 14px;
+      background-color: #FFFFFF;
+      border-bottom: 1px solid var(--border-hairline);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .panel-title {
+      margin: 0;
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--ink-primary);
+    }
+
+    .panel-sub {
+      margin: 2px 0 0 0;
+      font-size: 11px;
+      color: var(--ink-muted);
+    }
+
+    .panel-body {
+      padding: 12px;
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .inline-form {
+      display: flex;
+      gap: 6px;
+    }
+    .inline-form input {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .prestart-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .prestart-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 6px;
+      background-color: #FFFFFF;
+      border: 1px solid var(--border-hairline);
+      padding: 6px;
+    }
+
+    .prestart-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1px 6px;
+      border-radius: 9999px;
+      background-color: var(--yellow-soft);
+      border: 1px solid var(--border-hairline);
+      font-size: 10px;
+      font-weight: 800;
+      margin-top: 2px;
+      flex-shrink: 0;
+    }
+
+    .prestart-item textarea {
+      flex: 1;
+      border: none;
+      background: transparent;
+      font-size: 12px;
+      line-height: 1.35;
+      color: var(--ink-primary);
+      resize: none;
+      outline: none;
+      padding: 0;
+    }
+
+    .mini-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      flex-shrink: 0;
+    }
+
+    .mini-icon-btn {
+      width: 20px;
+      height: 18px;
+      font-size: 10px;
+      font-weight: 700;
+      border: 1px solid #D4D4D8;
+      background-color: #FAFAFA;
+      color: var(--ink-primary);
+      cursor: pointer;
+      padding: 0;
+      line-height: 1;
+    }
+    .mini-icon-btn:hover {
+      border-color: var(--border-hairline);
+      background-color: #FFFFFF;
+    }
+    .mini-icon-btn.danger:hover {
+      border-color: var(--red-bold);
+      color: var(--red-bold);
+    }
+
+    .empty-dashed-box {
+      text-align: center;
+      padding: 22px 12px;
+      background-color: #FFFFFF;
+      border: 1px dashed #A1A1AA;
+      font-size: 11px;
+      color: var(--ink-muted);
+    }
+
+    /* Center Dot-Grid Graph Canvas */
+    .graph-viewport {
+      flex: 1;
+      position: relative;
+      overflow: auto;
+      background-color: #FAFAFA;
+      background-image: radial-gradient(#D4D4D8 1.2px, transparent 1.2px);
+      background-size: 20px 20px;
+      user-select: none;
+      min-height: 440px;
+    }
+
+    .canvas-toolbar {
+      position: sticky;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 20;
+      padding: 12px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      pointer-events: none;
+    }
+
+    .toolbar-cluster {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+      background-color: #FFFFFF;
+      border: 1px solid var(--border-hairline);
+      padding: 5px;
+      pointer-events: auto;
+    }
+
+    .swatch-dot {
+      width: 9px;
+      height: 9px;
+      border: 1px solid var(--border-hairline);
+      display: inline-block;
+    }
+
+    .v-divider {
+      width: 1px;
+      height: 18px;
+      background-color: #D4D4D8;
+      margin: 0 2px;
+    }
+
+    .zoom-box {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+    }
+    .zoom-btn {
+      width: 24px;
+      height: 24px;
+      border: none;
+      background: transparent;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+      color: var(--ink-primary);
+    }
+    .zoom-btn:hover {
+      background-color: #F4F4F5;
+    }
+    .zoom-label {
+      width: 42px;
+      text-align: center;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .graph-stage {
+      position: relative;
+      width: 1900px;
+      height: 1150px;
+      transform-origin: top left;
+    }
+
+    .graph-svg-layer {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .nodes-layer {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+    }
+
+    /* Graph Nodes */
+    .flow-node {
+      position: absolute;
+      width: 244px;
+      background-color: #FFFFFF;
+      border: 1px solid var(--border-hairline);
+      cursor: grab;
+      transition: box-shadow 0.12s ease;
+    }
+    .flow-node:active {
+      cursor: grabbing;
+    }
+    .flow-node:hover {
+      border-color: var(--blue-bold);
+    }
+    .flow-node.selected {
+      box-shadow: 0 0 0 2px var(--blue-bold);
+    }
+
+    .node-body {
+      padding: 9px 10px;
+    }
+
+    .node-meta-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      margin-bottom: 5px;
+    }
+
+    .node-kind-label {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--ink-muted);
+    }
+
+    .node-qty-pill {
+      padding: 1.5px 8px;
+      border-radius: 9999px;
+      background-color: var(--yellow-soft);
+      border: 1px solid var(--border-hairline);
+      font-size: 10px;
+      font-weight: 800;
+      color: var(--ink-primary);
+    }
+
+    .node-next-btn {
+      padding: 2px 7px;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      background-color: var(--blue-mid);
+      color: var(--blue-dark);
+      border: 1px solid var(--blue-bold);
+      cursor: pointer;
+    }
+    .node-next-btn:hover {
+      background-color: #BFDBFE;
+    }
+
+    .node-title-text {
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 1.35;
+      color: var(--ink-primary);
+    }
+
+    .node-note-text {
+      margin-top: 3px;
+      font-size: 11px;
+      color: var(--ink-muted);
+      line-height: 1.3;
+    }
+
+    .node-tags-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-top: 6px;
+    }
+
+    /* Port Handles */
+    .port-handle {
+      position: absolute;
+      top: 50%;
+      width: 14px;
+      height: 14px;
+      border-radius: 9999px;
+      transform: translateY(-50%);
+      cursor: crosshair;
+      z-index: 10;
+      transition: transform 0.12s ease;
+    }
+    .port-handle:hover {
+      transform: translateY(-50%) scale(1.32);
+    }
+    .port-in {
+      left: -8px;
+      background-color: #FFFFFF;
+      border: 2px solid var(--border-hairline);
+    }
+    .port-out {
+      right: -8px;
+      background-color: var(--blue-bold);
+      border: 1.5px solid var(--border-hairline);
+    }
+
+    /* Right Inspector Sidebar */
+    .inspector-sidebar {
+      width: 330px;
+      background-color: #FFFFFF;
+      border-left: 1px solid var(--border-hairline);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      z-index: 20;
+    }
+
+    .field-group {
+      margin-bottom: 12px;
+    }
+    .field-label {
+      display: block;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--ink-secondary);
+      margin-bottom: 4px;
+    }
+    .two-col-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .tag-box-well {
+      padding: 8px;
+      background-color: #FAFAFA;
+      border: 1px solid var(--border-hairline);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      min-height: 36px;
+      align-items: center;
+    }
+    .tag-cloud {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+
+    /* ===================================================================== */
+    /* ROUNDED PILL TAGS (border-radius: 9999px)                             */
+    /* ===================================================================== */
+    .pill-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      border-radius: 9999px;
+      font-size: 9.5px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      padding: 2px 8px;
+      line-height: 1.25;
+      white-space: nowrap;
+      border: 1px solid var(--border-hairline);
+    }
+
+    .pill-tag-tech {
+      background-color: var(--blue-mid);
+      color: var(--blue-dark);
+      border-color: var(--blue-bold);
+    }
+
+    .pill-tag-param {
+      background-color: var(--red-mid);
+      color: var(--red-dark);
+      border-color: var(--red-bold);
+    }
+
+    .pill-tag-active-blue {
+      background-color: var(--blue-bold);
+      color: #FFFFFF;
+      border-color: var(--border-hairline);
+    }
+
+    .pill-tag-active-red {
+      background-color: var(--red-bold);
+      color: #FFFFFF;
+      border-color: var(--border-hairline);
+    }
+
+    /* ===================================================================== */
+    /* TAB 2: GRID RECIPE MATRIX & PRINTABLE SWISS SHEET                     */
+    /* ===================================================================== */
+    .grid-view-container {
+      flex: 1;
+      overflow-y: auto;
+      background-color: var(--bg-app);
+      padding: 16px 20px;
+    }
+
+    .grid-inner-wrap {
+      max-width: 1440px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .grid-control-bar {
+      background-color: #FFFFFF;
+      border: 1px solid var(--border-hairline);
+      padding: 10px 12px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .control-cluster {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .segmented-group {
+      display: inline-flex;
+      align-items: center;
+      background-color: #FAFAFA;
+      border: 1px solid var(--border-hairline);
+      padding: 2px;
+      gap: 2px;
+    }
+
+    .seg-btn {
+      padding: 4px 9px;
+      font-size: 11.5px;
+      font-weight: 700;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--ink-primary);
+      cursor: pointer;
+    }
+    .seg-btn:hover {
+      background-color: #FFFFFF;
+    }
+    .seg-btn.active {
+      background-color: var(--blue-mid);
+      color: var(--blue-dark);
+      border-color: var(--blue-bold);
+    }
+
+    .yield-input-box {
+      display: inline-flex;
+      align-items: center;
+      background-color: #FAFAFA;
+      border: 1px solid var(--border-hairline);
+      padding: 4px 8px;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--ink-secondary);
+    }
+    .yield-input-box input {
+      width: 44px;
+      border: none;
+      background: transparent;
+      font-size: 12px;
+      font-weight: 800;
+      text-align: right;
+      color: var(--ink-primary);
+      outline: none;
+    }
+
+    .checkbox-pill-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background-color: #FFFFFF;
+      border: 1px solid var(--border-hairline);
+      padding: 5px 10px;
+      font-size: 11.5px;
+      font-weight: 700;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    /* Swiss Printable Sheet */
+    .swiss-sheet {
+      background-color: #FFFFFF;
+      border: 1.5px solid var(--border-hairline);
+      color: var(--ink-primary);
+    }
+
+    /* Line 1: Bold Title + Yield Badge */
+    .sheet-title-bar {
+      padding: 10px 14px;
+      background-color: #FFFFFF;
+      border-bottom: 1px solid var(--border-hairline);
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .sheet-title-text {
+      margin: 0;
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+      color: var(--ink-primary);
+    }
+
+    .sheet-yield-pill {
+      padding: 2px 10px;
+      border-radius: 9999px;
+      background-color: var(--yellow-soft);
+      border: 1px solid var(--border-hairline);
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    /* Lines 2-3: Pre-start Pills Directly Underneath Title */
+    .prestart-strip {
+      padding: 6px 14px;
+      background-color: #FEFCE8;
+      border-bottom: 1px solid var(--border-hairline);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .prestart-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 2px 10px;
+      border-radius: 9999px;
+      background-color: #FFFFFF;
+      border: 1px solid var(--border-hairline);
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--ink-primary);
+    }
+
+    .grid-table-scroll {
+      overflow-x: auto;
+    }
+
+    .gridrecipe-table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: auto;
+    }
+
+    .gridrecipe-table th,
+    .gridrecipe-table td {
+      border: 1px solid var(--border-hairline);
+      vertical-align: middle;
+      transition: background-color 0.12s ease, opacity 0.12s ease;
+    }
+
+    .gridrecipe-table thead th {
+      background-color: #F4F4F5;
+      color: var(--ink-primary);
+      font-size: 9.5px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 5px 8px;
+      text-align: left;
+      border-bottom: 1.5px solid var(--border-hairline);
+    }
+
+    .cell-ingredient {
+      background-color: var(--yellow-soft);
+      padding: 6px 8px;
+      min-width: 185px;
+      max-width: 250px;
+      cursor: pointer;
+    }
+    .cell-ingredient:hover {
+      background-color: var(--yellow-mid);
+    }
+
+    .cell-lavoration {
+      background-color: var(--blue-soft);
+      padding: 6px 9px;
+      min-width: 165px;
+      max-width: 240px;
+      cursor: pointer;
+    }
+    .cell-lavoration:hover {
+      background-color: var(--blue-mid);
+    }
+
+    .cell-output {
+      background-color: var(--red-soft);
+      padding: 7px 10px;
+      min-width: 170px;
+      max-width: 250px;
+      cursor: pointer;
+    }
+    .cell-output:hover {
+      background-color: var(--red-mid);
+    }
+
+    .cell-passthrough {
+      background-color: #FFFFFF;
+      padding: 3px 6px;
+      min-width: 44px;
+    }
+    .passthrough-track {
+      height: 1px;
+      width: 100%;
+      border-bottom: 1px dashed #71717A;
+      position: relative;
+    }
+    .passthrough-track::after {
+      content: '▸';
+      position: absolute;
+      right: -2px;
+      top: -7px;
+      font-size: 9px;
+      color: #52525B;
+    }
+
+    .ing-cell-top {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .cell-main-label {
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 1.3;
+      color: var(--ink-primary);
+    }
+    .cell-lavoration .cell-main-label,
+    .cell-output .cell-main-label {
+      font-weight: 600;
+    }
+
+    .ing-qty-label {
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+      flex-shrink: 0;
+      color: var(--ink-primary);
+    }
+
+    .ing-note-sub {
+      font-size: 10.5px;
+      color: var(--ink-secondary);
+      margin-top: 2px;
+      line-height: 1.25;
+    }
+
+    .cell-tags-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-top: 5px;
+    }
+
+    .lineage-dimmed {
+      opacity: 0.35;
+    }
+    .lineage-active {
+      outline: 2px solid var(--blue-bold);
+      outline-offset: -2px;
+    }
+
+    .cell-done {
+      background-color: #F4F4F5 !important;
+      color: #71717A !important;
+    }
+    .cell-done .cell-main-label {
+      text-decoration: line-through;
+    }
+
+    .grid-footer-hint {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      font-size: 11px;
+      color: var(--ink-secondary);
+    }
+
+    /* ===================================================================== */
+    /* B&W PRINT PREVIEW MODE (ON SCREEN)                                    */
+    /* ===================================================================== */
+    .bw-preview .cell-ingredient,
+    .bw-preview .cell-lavoration,
+    .bw-preview .cell-output,
+    .bw-preview .cell-passthrough,
+    .bw-preview .prestart-strip,
+    .bw-preview .prestart-pill,
+    .bw-preview .sheet-yield-pill {
+      background-color: #FFFFFF !important;
+      color: #18181B !important;
+      border-color: #18181B !important;
+    }
+    .bw-preview .gridrecipe-table thead th {
+      background-color: #F4F4F5 !important;
+      color: #18181B !important;
+      border-color: #18181B !important;
+    }
+    .bw-preview .pill-tag,
+    .bw-preview .pill-tag-tech,
+    .bw-preview .pill-tag-param {
+      background-color: #FFFFFF !important;
+      color: #18181B !important;
+      border: 1px solid #18181B !important;
+      border-radius: 9999px !important;
+    }
+
+    /* ===================================================================== */
+    /* MODAL & TOAST STACK                                                   */
+    /* ===================================================================== */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 70;
+      background-color: rgba(24, 24, 27, 0.35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .modal-card {
+      background-color: #FFFFFF;
+      border: 2px solid var(--border-hairline);
+      max-width: 560px;
+      width: 100%;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border-hairline);
+      padding-bottom: 8px;
+    }
+    .modal-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .toast-stack {
+      position: fixed;
+      bottom: 16px;
+      right: 16px;
+      z-index: 80;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      pointer-events: none;
+    }
+    .toast-item {
+      background-color: #FFFFFF;
+      color: var(--ink-primary);
+      border: 1px solid var(--border-hairline);
+      border-left-width: 4px;
+      padding: 8px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      transition: opacity 0.2s ease;
+    }
+
+    /* ===================================================================== */
+    /* RESPONSIVE BREAKPOINTS (MOBILE / TABLET)                              */
+    /* ===================================================================== */
+    @media (max-width: 960px) {
+      .flow-workspace {
+        flex-direction: column;
+        overflow-y: auto;
+      }
+      .prestart-sidebar {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid var(--border-hairline);
+        max-height: 260px;
+      }
+      .inspector-sidebar {
+        width: 100%;
+        border-left: none;
+        border-top: 1px solid var(--border-hairline);
+      }
+    }
+
+    /* ===================================================================== */
+    /* DEDICATED @MEDIA PRINT STYLESHEET (PURE MONOCHROME INK ON PAPER)      */
+    /* ===================================================================== */
+    @media print {
+      html, body {
+        background-color: #FFFFFF !important;
+        color: #18181B !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+        height: auto !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      .no-print {
+        display: none !important;
+      }
+
+      #view-flow-graph {
+        display: none !important;
+      }
+
+      #view-grid-recipe {
+        display: block !important;
+        background-color: #FFFFFF !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        overflow: visible !important;
+      }
+
+      .grid-inner-wrap {
+        max-width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+      }
+
+      .grid-table-scroll {
+        overflow: visible !important;
+      }
+
+      .swiss-sheet {
+        border: 1.5px solid #18181B !important;
+        background-color: #FFFFFF !important;
+      }
+
+      .lineage-dimmed {
+        opacity: 1 !important;
+      }
+      .lineage-active {
+        outline: none !important;
+      }
+
+      .cell-ingredient,
+      .cell-lavoration,
+      .cell-output,
+      .cell-passthrough,
+      .prestart-strip,
+      .prestart-pill,
+      .sheet-yield-pill {
+        background-color: #FFFFFF !important;
+        color: #18181B !important;
+        border-color: #18181B !important;
+      }
+
+      .gridrecipe-table thead th {
+        background-color: #F4F4F5 !important;
+        color: #18181B !important;
+        border-color: #18181B !important;
+      }
+
+      .pill-tag,
+      .pill-tag-tech,
+      .pill-tag-param {
+        background-color: #FFFFFF !important;
+        color: #18181B !important;
+        border: 1px solid #18181B !important;
+        border-radius: 9999px !important;
+      }
+
+      .gridrecipe-table tr,
+      .gridrecipe-table td,
+      .gridrecipe-table th {
+        break-inside: avoid;
+        page-break-inside: avoid;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Toast Feedback Stack -->
+  <div id="toast-stack" class="no-print toast-stack"></div>
+
+  <!-- ======================================================================= -->
+  <!-- TOP NAVIGATION HEADER                                                   -->
+  <!-- ======================================================================= -->
+  <header class="no-print app-header">
+    <!-- Left: Swiss Bauhaus Mark + Localized Title -->
+    <div class="brand-group">
+      <div class="bauhaus-mark" aria-hidden="true">
+        <span class="bm-yellow"></span>
+        <span class="bm-blue"></span>
+        <span class="bm-red"></span>
+        <span class="bm-white"></span>
+      </div>
+      <div>
+        <h1 id="ui-app-title" class="app-title">Grid Recipe Generator</h1>
+        <p id="ui-app-subtitle" class="app-subtitle">Monodirectional Culinary Graph &amp; Matrix Compiler</p>
+      </div>
+    </div>
+
+    <!-- Center: Two Main Tabs (Flow Graph & Grid Recipe) -->
+    <nav class="tab-nav" aria-label="Primary Views">
+      <button id="nav-tab-graph" type="button" onclick="switchTab('graph')" class="tab-btn active">Flow Graph</button>
+      <button id="nav-tab-grid" type="button" onclick="switchTab('grid')" class="tab-btn">Grid Recipe</button>
+    </nav>
+
+    <!-- Right: Preset Selector + New + Download App (.html) + 7-Language Flag Dropdown -->
+    <div class="header-actions">
+      <select id="preset-selector" onchange="loadPreset(this.value)" aria-label="Recipe Presets" class="swiss-select">
+        <option value="carbonara">Spaghetti Carbonara</option>
+        <option value="cookies">Chocolate Chip Cookies</option>
+        <option value="tiramisu">Classic Tiramisu</option>
+      </select>
+
+      <button id="btn-new-recipe" type="button" onclick="clearRecipe()" class="swiss-btn">+ New</button>
+
+      <button id="btn-download-app" type="button" onclick="downloadSelfContainedApp()" class="swiss-btn swiss-btn-blue" title="Download standalone offline .html file with current recipe">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+          <path stroke-linecap="square" d="M12 3v12m0 0l-4-4m4 4l4-4M4 17v3h16v-3" />
+        </svg>
+        <span id="ui-download-app">Save App (.html)</span>
+      </button>
+
+      <!-- 7-Language Flag Dropdown -->
+      <div class="lang-wrapper" id="lang-dropdown-wrapper">
+        <button id="lang-dropdown-btn" type="button" onclick="toggleLangMenu(event)" aria-haspopup="listbox" aria-expanded="false" class="lang-trigger">
+          <span id="current-lang-flag" style="font-size: 14px; line-height: 1;">🇬🇧</span>
+          <span id="current-lang-code">EN</span>
+          <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.3" viewBox="0 0 24 24">
+            <path stroke-linecap="square" d="M6 9l6 6 6-6" />
+          </svg>
+        </button>
+
+        <ul id="lang-dropdown-menu" role="listbox" class="hidden lang-menu">
+          <li><button type="button" onclick="setLanguage('en')"><span>🇬🇧</span><span>English</span></button></li>
+          <li><button type="button" onclick="setLanguage('fr')"><span>🇫🇷</span><span>Français</span></button></li>
+          <li><button type="button" onclick="setLanguage('it')"><span>🇮🇹</span><span>Italiano</span></button></li>
+          <li><button type="button" onclick="setLanguage('de')"><span>🇩🇪</span><span>Deutsch</span></button></li>
+          <li><button type="button" onclick="setLanguage('es')"><span>🇪🇸</span><span>Español</span></button></li>
+          <li><button type="button" onclick="setLanguage('ja')"><span>🇯🇵</span><span>日本語</span></button></li>
+          <li><button type="button" onclick="setLanguage('pt')"><span>🇵🇹</span><span>Português</span></button></li>
+        </ul>
+      </div>
+    </div>
+  </header>
+
+  <!-- ======================================================================= -->
+  <!-- TAB 1: FLOW GRAPH (MONODIRECTIONAL DAG BUILDER)                         -->
+  <!-- ======================================================================= -->
+  <main id="view-flow-graph" class="flow-workspace">
+
+    <!-- Left Sidebar: Before You Start (Mise en Place) -->
+    <aside class="prestart-sidebar">
+      <div class="top-accent-bar accent-yellow"></div>
+      <div class="panel-header">
+        <div>
+          <h2 id="ui-prestart-title" class="panel-title">Before You Start</h2>
+          <p id="ui-prestart-sub" class="panel-sub">Mise en place &amp; pre-recipe steps</p>
+        </div>
+        <span id="prestart-count-pill" class="prestart-num tabular-nums">3</span>
+      </div>
+
+      <div class="panel-body">
+        <form onsubmit="handleAddPreStart(event)" class="inline-form">
+          <input id="prestart-input" type="text" placeholder="e.g., Preheat oven to 180°C..." class="swiss-input" />
+          <button id="ui-prestart-add-btn" type="submit" class="swiss-btn swiss-btn-yellow">Add</button>
+        </form>
+
+        <ul id="prestart-editor-list" class="prestart-list"></ul>
+
+        <div id="prestart-empty-box" class="hidden empty-dashed-box">
+          No pre-steps yet. Add tasks to do before starting the recipe.
+        </div>
+      </div>
+    </aside>
+
+    <!-- Center Dot-Grid Workspace -->
+    <section id="graph-viewport" class="graph-viewport">
+      <!-- Floating Canvas Toolbar -->
+      <div class="canvas-toolbar">
+        <div class="toolbar-cluster">
+          <button type="button" onclick="addNode('ingredient')" class="swiss-btn swiss-btn-yellow">
+            <span class="swatch-dot bm-yellow"></span>
+            <span id="ui-add-ing">+ Ingredient</span>
+          </button>
+
+          <button type="button" onclick="addNode('lavoration')" class="swiss-btn swiss-btn-blue">
+            <span class="swatch-dot bm-blue"></span>
+            <span id="ui-add-lav">+ Lavoration</span>
+          </button>
+
+          <button type="button" onclick="addNode('output')" class="swiss-btn swiss-btn-red">
+            <span class="swatch-dot bm-red"></span>
+            <span id="ui-add-out">+ Final Dish</span>
+          </button>
+
+          <div class="v-divider"></div>
+
+          <button id="ui-auto-layout" type="button" onclick="autoAlignLeftToRight()" class="swiss-btn">
+            Auto-Layout
+          </button>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 6px; pointer-events: auto;">
+          <div class="toolbar-cluster">
+            <button id="ui-export-json" type="button" onclick="openJsonModal('export')" class="swiss-btn" style="border: none; padding: 3px 7px;">Export JSON</button>
+            <div class="v-divider"></div>
+            <button id="ui-import-json" type="button" onclick="openJsonModal('import')" class="swiss-btn" style="border: none; padding: 3px 7px;">Import JSON</button>
+          </div>
+
+          <div class="toolbar-cluster zoom-box">
+            <button type="button" onclick="changeZoom(-0.1)" class="zoom-btn" title="Zoom Out">−</button>
+            <span id="zoom-readout" class="zoom-label tabular-nums">100%</span>
+            <button type="button" onclick="changeZoom(0.1)" class="zoom-btn" title="Zoom In">+</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Inner Scalable Workspace -->
+      <div id="graph-stage" class="graph-stage">
+        <svg id="graph-svg-layer" class="graph-svg-layer">
+          <defs>
+            <marker id="arrow-blue" markerWidth="9" markerHeight="9" refX="7" refY="3.5" orient="auto">
+              <path d="M0,0 L0,7 L8,3.5 z" fill="#2563EB"></path>
+            </marker>
+            <marker id="arrow-red" markerWidth="9" markerHeight="9" refX="7" refY="3.5" orient="auto">
+              <path d="M0,0 L0,7 L8,3.5 z" fill="#DC2626"></path>
+            </marker>
+          </defs>
+          <g id="edges-group"></g>
+          <path id="temp-wire-path" d="" fill="none" stroke="#2563EB" stroke-width="2" stroke-dasharray="5,4" marker-end="url(#arrow-blue)" class="hidden"></path>
+        </svg>
+
+        <div id="nodes-layer" class="nodes-layer"></div>
+      </div>
+    </section>
+
+    <!-- Right Inspector Panel -->
+    <aside class="inspector-sidebar">
+      <div class="panel-header" style="background-color: #FAFAFA;">
+        <h2 id="ui-inspector-title" class="panel-title">Inspector</h2>
+        <span id="inspector-type-pill" class="pill-tag" style="background: #FFFFFF;">None</span>
+      </div>
+      <div id="inspector-body" class="panel-body"></div>
+    </aside>
+  </main>
+
+  <!-- ======================================================================= -->
+  <!-- TAB 2: GRID RECIPE (COMPACT MERGED-CELL MATRIX & SINGLE-PAGE PRINT)     -->
+  <!-- ======================================================================= -->
+  <main id="view-grid-recipe" class="hidden grid-view-container">
+    <div class="grid-inner-wrap">
+
+      <!-- Top Print & Scale Control Bar (Hidden in @media print) -->
+      <section class="no-print grid-control-bar">
+        <div class="control-cluster">
+          <input id="grid-recipe-title-input" type="text" value="Classic Spaghetti Carbonara" aria-label="Recipe Title" class="swiss-input" style="font-weight: 800; width: 240px;" />
+
+          <div class="yield-input-box">
+            <label id="ui-base-servings-label" for="grid-servings-input">Yield:</label>
+            <input id="grid-servings-input" type="number" min="1" max="200" value="4" class="tabular-nums" />
+          </div>
+
+          <div class="segmented-group">
+            <button type="button" onclick="setYieldMultiplier(0.5)" id="mult-btn-0.5" class="seg-btn">0.5×</button>
+            <button type="button" onclick="setYieldMultiplier(1)" id="mult-btn-1" class="seg-btn active">1×</button>
+            <button type="button" onclick="setYieldMultiplier(2)" id="mult-btn-2" class="seg-btn">2×</button>
+          </div>
+        </div>
+
+        <div class="control-cluster">
+          <div class="segmented-group">
+            <select id="print-paper-size" onchange="updatePrintLayout()" aria-label="Paper Size" class="swiss-select" style="padding: 4px 8px;">
+              <option value="A4">A4</option>
+              <option value="letter">Letter</option>
+            </select>
+            <select id="print-orientation" onchange="updatePrintLayout()" aria-label="Orientation" class="swiss-select" style="padding: 4px 8px;">
+              <option id="opt-landscape" value="landscape" selected>Landscape</option>
+              <option id="opt-portrait" value="portrait">Portrait</option>
+            </select>
+          </div>
+
+          <div class="segmented-group">
+            <button type="button" onclick="setFitMode(true)" id="fit-btn-page" class="seg-btn active">Fit 1 Page Wide</button>
+            <button type="button" onclick="setFitMode(false)" id="fit-btn-100" class="seg-btn">100%</button>
+          </div>
+
+          <label class="checkbox-pill-label">
+            <input type="checkbox" id="bw-preview-toggle" onchange="toggleBwPreview(this.checked)" style="accent-color: #2563EB;" />
+            <span id="ui-preview-bw">Preview Print B&amp;W</span>
+          </label>
+
+          <button id="ui-export-html" type="button" onclick="downloadPrintHtml()" class="swiss-btn">
+            Export Print HTML
+          </button>
+
+          <button type="button" onclick="triggerPrint()" class="swiss-btn swiss-btn-blue-solid">
+            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+              <path stroke-linecap="square" d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 14h12v8H6z" />
+            </svg>
+            <span id="ui-print-recipe">Print Recipe</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- PRINTABLE RECIPE SHEET CONTAINER                                    -->
+      <!-- =================================================================== -->
+      <article id="printable-sheet" class="swiss-sheet">
+
+        <!-- LINE 1: Recipe Title + Yield Pill -->
+        <header class="sheet-title-bar">
+          <h2 id="sheet-recipe-title" class="sheet-title-text">Classic Spaghetti Carbonara</h2>
+          <span id="sheet-yield-badge" class="sheet-yield-pill tabular-nums">4 SERVINGS</span>
+        </header>
+
+        <!-- LINES 2-3: Clean Horizontal Pills of Pre-Steps -->
+        <section id="sheet-prestart-strip" class="prestart-strip"></section>
+
+        <!-- MAIN TABLE: Compact Merged-Cell GridRecipe Matrix -->
+        <div id="grid-table-scroll" class="grid-table-scroll"></div>
+
+      </article>
+
+      <!-- Screen-Only Interaction Hint -->
+      <footer class="no-print grid-footer-hint">
+        <span id="ui-grid-hint">Hover any cell to highlight upstream &amp; downstream lineage • Click any cell to check off</span>
+        <span id="dag-split-badge" class="hidden" style="font-weight: 700; color: #1D4ED8;"></span>
+      </footer>
+    </div>
+  </main>
+
+  <!-- ======================================================================= -->
+  <!-- JSON EXPORT / IMPORT MODAL                                              -->
+  <!-- ======================================================================= -->
+  <div id="json-modal" class="no-print hidden modal-backdrop">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="json-modal-heading" class="panel-title">Export JSON</h3>
+        <button type="button" onclick="closeJsonModal()" class="mini-icon-btn" style="width: 24px; height: 24px;">✕</button>
+      </div>
+      <textarea id="json-modal-textarea" rows="11" class="swiss-textarea" style="font-family: monospace; width: 100%;"></textarea>
+      <div class="modal-footer">
+        <button id="ui-copy-json" type="button" onclick="copyJsonText()" class="swiss-btn">Copy</button>
+        <div style="display: flex; gap: 8px;">
+          <button id="ui-close-json" type="button" onclick="closeJsonModal()" class="swiss-btn">Close</button>
+          <button id="json-apply-btn" type="button" onclick="applyImportedJson()" class="swiss-btn swiss-btn-blue-solid">Load Recipe</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Optional Embedded State Payload (populated when saved via "Save App (.html)") -->
+  <script id="embedded-recipe-state" type="application/json">null</script>
+
+  <!-- ======================================================================= -->
+  <!-- APPLICATION JAVASCRIPT                                                  -->
+  <!-- ======================================================================= -->
+  <script>
+    // =========================================================================
+    // 7-LANGUAGE DICTIONARY (EN, FR, IT, DE, ES, JA, PT)
+    // =========================================================================
+    const I18N = {
+      en: {
+        flag: '🇬🇧',
+        code: 'EN',
+        appTitle: 'Grid Recipe Generator',
+        appSubtitle: 'Monodirectional Culinary Graph & Matrix Compiler',
+        tabGraph: 'Flow Graph',
+        tabGrid: 'Grid Recipe',
+        newBtn: '+ New',
+        downloadApp: 'Save App (.html)',
+        preStartTitle: 'Before You Start',
+        preStartSub: 'Mise en place & pre-recipe steps',
+        preStartPlaceholder: 'e.g., Preheat oven to 180°C...',
+        preStartEmpty: 'No pre-steps yet. Add tasks to do before starting the recipe.',
+        addBtn: 'Add',
+        addIng: '+ Ingredient',
+        addLav: '+ Lavoration',
+        addOut: '+ Final Dish',
+        autoLayout: 'Auto-Layout',
+        exportJson: 'Export JSON',
+        importJson: 'Import JSON',
+        inspectorTitle: 'Inspector',
+        inspectorNone: 'Select any node or wire on the canvas to edit its properties and tags.',
+        typeNone: 'None',
+        typeIngredient: 'Ingredient',
+        typeLavoration: 'Lavoration',
+        typeOutput: 'Final Dish',
+        typeConnection: 'Connection',
+        nextBtn: '+ Next',
+        fieldIngName: 'Ingredient Name',
+        fieldQty: 'Quantity',
+        fieldUnit: 'Unit',
+        fieldNote: 'Prep Note (Optional)',
+        fieldNotePh: 'e.g., finely diced, room temp',
+        fieldLavAction: 'Lavoration Action',
+        fieldOutAction: 'Final Dish Plating',
+        fieldActiveTags: 'Active Pill Tags (Click × to Remove)',
+        fieldNoTags: 'No tags attached yet',
+        fieldCustomTagPh: 'Custom tag (e.g. 190°C, 8 MIN, SIFT)...',
+        fieldQuickTech: 'Technique Tags',
+        fieldQuickParam: 'Oven & Time Tags',
+        deleteNode: 'Delete Node',
+        deleteEdge: 'Delete Connection',
+        fromLabel: 'From',
+        toLabel: 'To',
+        yieldLabel: 'Yield:',
+        servingsUnit: 'SERVINGS',
+        landscape: 'Landscape',
+        portrait: 'Portrait',
+        fitPage: 'Fit 1 Page Wide',
+        previewBw: 'Preview Print B&W',
+        exportHtml: 'Export Print HTML',
+        printRecipe: 'Print Recipe',
+        colIngredients: 'Ingredients',
+        colStage: 'Stage',
+        colFinish: 'Finish',
+        gridHint: 'Hover any cell to highlight upstream & downstream lineage • Click any cell to check off',
+        sharedSplitHint: 'Shared intermediate steps split into parallel rows for clean alignment',
+        presetNames: {
+          carbonara: 'Spaghetti Carbonara',
+          cookies: 'Chocolate Chip Cookies',
+          tiramisu: 'Classic Tiramisu'
+        },
+        quickTechTags: ['WHISK', 'BOIL', 'SAUTÉ', 'FOLD', 'BAKE', 'SIMMER', 'CHILL', 'KNEAD', 'EMULSIFY', 'PLATE'],
+        quickParamTags: ['180°C', '200°C', '12 MIN', '10 MIN', 'MED HEAT', '4H CHILL'],
+        toastCycle: 'Cycle blocked: Flow must stay monodirectional left → right',
+        toastOutSrc: 'Final Dish nodes cannot have outgoing wires',
+        toastIngDst: 'Ingredients are starting inputs and cannot receive wires',
+        toastAligned: 'Aligned flow graph left → right',
+        toastCopied: 'Copied to clipboard',
+        toastSavedApp: 'Downloaded self-contained offline app (.html)'
+      },
+
+      fr: {
+        flag: '🇫🇷',
+        code: 'FR',
+        appTitle: 'Générateur de Recette Grille',
+        appSubtitle: 'Graphe Culinaire Monodirectionnel & Matrice Imprimable',
+        tabGraph: 'Graphe de Flux',
+        tabGrid: 'Recette Grille',
+        newBtn: '+ Nouveau',
+        downloadApp: 'Sauver App (.html)',
+        preStartTitle: 'Avant de Commencer',
+        preStartSub: 'Mise en place & étapes préalables',
+        preStartPlaceholder: 'ex. Préchauffer le four à 180°C...',
+        preStartEmpty: 'Aucune étape préalable. Ajoutez vos tâches de mise en place.',
+        addBtn: 'Ajouter',
+        addIng: '+ Ingrédient',
+        addLav: '+ Préparation',
+        addOut: '+ Plat Final',
+        autoLayout: 'Aligner',
+        exportJson: 'Exporter JSON',
+        importJson: 'Importer JSON',
+        inspectorTitle: 'Inspecteur',
+        inspectorNone: 'Sélectionnez un nœud ou un lien sur le canevas pour le modifier.',
+        typeNone: 'Aucun',
+        typeIngredient: 'Ingrédient',
+        typeLavoration: 'Préparation',
+        typeOutput: 'Plat Final',
+        typeConnection: 'Connexion',
+        nextBtn: '+ Suite',
+        fieldIngName: 'Nom de l’ingrédient',
+        fieldQty: 'Quantité',
+        fieldUnit: 'Unité',
+        fieldNote: 'Note de coupe / prép. (Optionnel)',
+        fieldNotePh: 'ex. finement ciselé, temp. ambiante',
+        fieldLavAction: 'Action de préparation',
+        fieldOutAction: 'Dressage final',
+        fieldActiveTags: 'Tags Actifs (Cliquer × pour retirer)',
+        fieldNoTags: 'Aucun tag ajouté',
+        fieldCustomTagPh: 'Tag personnalisé (ex. 190°C, 8 MIN)...',
+        fieldQuickTech: 'Tags Techniques',
+        fieldQuickParam: 'Tags Four & Temps',
+        deleteNode: 'Supprimer le Nœud',
+        deleteEdge: 'Supprimer le Lien',
+        fromLabel: 'De',
+        toLabel: 'Vers',
+        yieldLabel: 'Portions :',
+        servingsUnit: 'PORTIONS',
+        landscape: 'Paysage',
+        portrait: 'Portrait',
+        fitPage: 'Ajuster 1 Page',
+        previewBw: 'Aperçu Impression N&B',
+        exportHtml: 'Exporter HTML Impr.',
+        printRecipe: 'Imprimer la Recette',
+        colIngredients: 'Ingrédients',
+        colStage: 'Étape',
+        colFinish: 'Finition',
+        gridHint: 'Survolez une case pour voir la lignée • Cliquez pour cocher',
+        sharedSplitHint: 'Les étapes partagées sont dédoublées en lignes parallèles',
+        presetNames: {
+          carbonara: 'Spaghetti Carbonara',
+          cookies: 'Cookies aux Pépites de Chocolat',
+          tiramisu: 'Tiramisu Classique'
+        },
+        quickTechTags: ['FOUETTER', 'BOUILLIR', 'SAUTER', 'INCORPORER', 'CUIRE', 'MIJOTER', 'RÉFRIGÉRER', 'PÉTRIR', 'ÉMULSIONNER', 'DRESSER'],
+        quickParamTags: ['180°C', '200°C', '12 MIN', '10 MIN', 'FEU MOYEN', '4H FROID'],
+        toastCycle: 'Boucle bloquée : le flux doit rester monodirectionnel',
+        toastOutSrc: 'Le plat final ne peut pas avoir de sortie',
+        toastIngDst: 'Un ingrédient est un point de départ',
+        toastAligned: 'Graphe aligné de gauche à droite',
+        toastCopied: 'Copié dans le presse-papiers',
+        toastSavedApp: 'Application autonome téléchargée (.html)'
+      },
+
+      it: {
+        flag: '🇮🇹',
+        code: 'IT',
+        appTitle: 'Generatore Ricette a Griglia',
+        appSubtitle: 'Grafo Culinario Monodirezionale & Matrice Stampabile',
+        tabGraph: 'Grafo di Flusso',
+        tabGrid: 'Ricetta a Griglia',
+        newBtn: '+ Nuova',
+        downloadApp: 'Salva App (.html)',
+        preStartTitle: 'Prima di Iniziare',
+        preStartSub: 'Mise en place e passaggi preliminari',
+        preStartPlaceholder: 'es. Preriscaldare il forno a 180°C...',
+        preStartEmpty: 'Nessun passaggio preliminare. Aggiungi le attività iniziali.',
+        addBtn: 'Aggiungi',
+        addIng: '+ Ingrediente',
+        addLav: '+ Lavorazione',
+        addOut: '+ Piatto Finale',
+        autoLayout: 'Allinea',
+        exportJson: 'Esporta JSON',
+        importJson: 'Importa JSON',
+        inspectorTitle: 'Ispettore',
+        inspectorNone: 'Seleziona un nodo o un collegamento per modificarne proprietà e tag.',
+        typeNone: 'Nessuno',
+        typeIngredient: 'Ingrediente',
+        typeLavoration: 'Lavorazione',
+        typeOutput: 'Piatto Finale',
+        typeConnection: 'Collegamento',
+        nextBtn: '+ Dopo',
+        fieldIngName: 'Nome Ingrediente',
+        fieldQty: 'Quantità',
+        fieldUnit: 'Unità',
+        fieldNote: 'Nota prep. (Opzionale)',
+        fieldNotePh: 'es. tritato fine, temp. ambiente',
+        fieldLavAction: 'Azione di Lavorazione',
+        fieldOutAction: 'Impiattamento Finale',
+        fieldActiveTags: 'Tag Attivi (Clicca × per rimuovere)',
+        fieldNoTags: 'Nessun tag assegnato',
+        fieldCustomTagPh: 'Tag personalizzato (es. 190°C, 8 MIN)...',
+        fieldQuickTech: 'Tag Lavorazione',
+        fieldQuickParam: 'Tag Forno & Tempo',
+        deleteNode: 'Elimina Nodo',
+        deleteEdge: 'Elimina Collegamento',
+        fromLabel: 'Da',
+        toLabel: 'A',
+        yieldLabel: 'Porzioni:',
+        servingsUnit: 'PORZIONI',
+        landscape: 'Orizzontale',
+        portrait: 'Verticale',
+        fitPage: 'Adatta 1 Pagina',
+        previewBw: 'Anteprima Stampa B/N',
+        exportHtml: 'Esporta HTML Stampa',
+        printRecipe: 'Stampa Ricetta',
+        colIngredients: 'Ingredienti',
+        colStage: 'Fase',
+        colFinish: 'Finitura',
+        gridHint: 'Passa su una cella per evidenziare il flusso • Clicca per spuntare',
+        sharedSplitHint: 'I passaggi condivisi sono divisi su righe parallele',
+        presetNames: {
+          carbonara: 'Spaghetti alla Carbonara',
+          cookies: 'Biscotti con Gocce di Cioccolato',
+          tiramisu: 'Tiramisù Classico'
+        },
+        quickTechTags: ['SBATTERE', 'BOLLIRE', 'ROSOLARE', 'INCORPORARE', 'INFORNARE', 'SOBBOLLIRE', 'RAFFREDDARE', 'IMPASTARE', 'EMULSIONARE', 'IMPIATTARE'],
+        quickParamTags: ['180°C', '200°C', '12 MIN', '10 MIN', 'FUOCO MEDIO', '4H FRIGO'],
+        toastCycle: 'Ciclo bloccato: il flusso deve restare monodirezionale',
+        toastOutSrc: 'Il piatto finale non può avere uscite',
+        toastIngDst: 'Gli ingredienti sono punti di partenza',
+        toastAligned: 'Grafo allineato da sinistra a destra',
+        toastCopied: 'Copiato negli appunti',
+        toastSavedApp: 'App offline salvata (.html)'
+      },
+
+      de: {
+        flag: '🇩🇪',
+        code: 'DE',
+        appTitle: 'Raster-Rezept-Generator',
+        appSubtitle: 'Monodirektionaler Koch-Graph & Druck-Matrix',
+        tabGraph: 'Ablauf-Graph',
+        tabGrid: 'Raster-Rezept',
+        newBtn: '+ Neu',
+        downloadApp: 'App speichern (.html)',
+        preStartTitle: 'Vor dem Start',
+        preStartSub: 'Mise en Place & Vorbereitungsschritte',
+        preStartPlaceholder: 'z.B. Backofen auf 180°C vorheizen...',
+        preStartEmpty: 'Noch keine Vorbereitungsschritte vorhanden.',
+        addBtn: 'Hinzufügen',
+        addIng: '+ Zutat',
+        addLav: '+ Arbeitsschritt',
+        addOut: '+ Fertiges Gericht',
+        autoLayout: 'Ausrichten',
+        exportJson: 'JSON Export',
+        importJson: 'JSON Import',
+        inspectorTitle: 'Inspektor',
+        inspectorNone: 'Wähle einen Knoten oder eine Verbindung zur Bearbeitung aus.',
+        typeNone: 'Keine',
+        typeIngredient: 'Zutat',
+        typeLavoration: 'Arbeitsschritt',
+        typeOutput: 'Fertiges Gericht',
+        typeConnection: 'Verbindung',
+        nextBtn: '+ Weiter',
+        fieldIngName: 'Zutatenname',
+        fieldQty: 'Menge',
+        fieldUnit: 'Einheit',
+        fieldNote: 'Hinweis (Optional)',
+        fieldNotePh: 'z.B. fein gewürfelt, zimmerwarm',
+        fieldLavAction: 'Arbeitsschritt / Aktion',
+        fieldOutAction: 'Anrichten & Servieren',
+        fieldActiveTags: 'Aktive Tags (× zum Entfernen)',
+        fieldNoTags: 'Noch keine Tags',
+        fieldCustomTagPh: 'Eigener Tag (z.B. 190°C, 8 MIN)...',
+        fieldQuickTech: 'Technik-Tags',
+        fieldQuickParam: 'Ofen- & Zeit-Tags',
+        deleteNode: 'Knoten löschen',
+        deleteEdge: 'Verbindung löschen',
+        fromLabel: 'Von',
+        toLabel: 'Nach',
+        yieldLabel: 'Portionen:',
+        servingsUnit: 'PORTIONEN',
+        landscape: 'Querformat',
+        portrait: 'Hochformat',
+        fitPage: '1 Seite breit',
+        previewBw: 'S/W-Druckvorschau',
+        exportHtml: 'Druck-HTML Export',
+        printRecipe: 'Rezept drucken',
+        colIngredients: 'Zutaten',
+        colStage: 'Stufe',
+        colFinish: 'Abschluss',
+        gridHint: 'Zelle berühren für Ablauf-Pfad • Klicken zum Abhaken',
+        sharedSplitHint: 'Geteilte Zwischenschritte wurden auf parallele Zeilen aufgeteilt',
+        presetNames: {
+          carbonara: 'Spaghetti Carbonara',
+          cookies: 'Chocolate Chip Cookies',
+          tiramisu: 'Klassisches Tiramisu'
+        },
+        quickTechTags: ['SCHLAGEN', 'KOCHEN', 'ANBRATEN', 'UNTERHEBEN', 'BACKEN', 'KÖCHELN', 'KÜHLEN', 'KNETEN', 'EMULGIEREN', 'ANRICHTEN'],
+        quickParamTags: ['180°C', '200°C', '12 MIN', '10 MIN', 'MITTL. HITZE', '4H KÜHLEN'],
+        toastCycle: 'Zyklus blockiert: Fluss muss monodirektional bleiben',
+        toastOutSrc: 'Endgerichte haben keine ausgehenden Verbindungen',
+        toastIngDst: 'Zutaten sind Startpunkte',
+        toastAligned: 'Graph von links nach rechts ausgerichtet',
+        toastCopied: 'In die Zwischenablage kopiert',
+        toastSavedApp: 'Eigenständige App heruntergeladen (.html)'
+      },
+
+      es: {
+        flag: '🇪🇸',
+        code: 'ES',
+        appTitle: 'Generador de Recetas en Cuadrícula',
+        appSubtitle: 'Grafo Culinario Monodireccional y Matriz Imprimible',
+        tabGraph: 'Grafo de Flujo',
+        tabGrid: 'Receta Cuadrícula',
+        newBtn: '+ Nueva',
+        downloadApp: 'Guardar App (.html)',
+        preStartTitle: 'Antes de Empezar',
+        preStartSub: 'Mise en place y pasos previos',
+        preStartPlaceholder: 'ej. Precalentar el horno a 180°C...',
+        preStartEmpty: 'Sin pasos previos. Añade tareas antes de empezar la receta.',
+        addBtn: 'Añadir',
+        addIng: '+ Ingrediente',
+        addLav: '+ Elaboración',
+        addOut: '+ Plato Final',
+        autoLayout: 'Alinear',
+        exportJson: 'Exportar JSON',
+        importJson: 'Importar JSON',
+        inspectorTitle: 'Inspector',
+        inspectorNone: 'Selecciona un nodo o conexión para editar sus propiedades y etiquetas.',
+        typeNone: 'Ninguno',
+        typeIngredient: 'Ingrediente',
+        typeLavoration: 'Elaboración',
+        typeOutput: 'Plato Final',
+        typeConnection: 'Conexión',
+        nextBtn: '+ Siguiente',
+        fieldIngName: 'Nombre del Ingrediente',
+        fieldQty: 'Cantidad',
+        fieldUnit: 'Unidad',
+        fieldNote: 'Nota prep. (Opcional)',
+        fieldNotePh: 'ej. picado fino, temp. ambiente',
+        fieldLavAction: 'Acción de Elaboración',
+        fieldOutAction: 'Emplatado Final',
+        fieldActiveTags: 'Etiquetas Activas (Clic × para quitar)',
+        fieldNoTags: 'Sin etiquetas aún',
+        fieldCustomTagPh: 'Etiqueta propia (ej. 190°C, 8 MIN)...',
+        fieldQuickTech: 'Etiquetas de Técnica',
+        fieldQuickParam: 'Etiquetas Horno y Tiempo',
+        deleteNode: 'Eliminar Nodo',
+        deleteEdge: 'Eliminar Conexión',
+        fromLabel: 'Desde',
+        toLabel: 'Hacia',
+        yieldLabel: 'Raciones:',
+        servingsUnit: 'RACIONES',
+        landscape: 'Horizontal',
+        portrait: 'Vertical',
+        fitPage: 'Ajustar 1 Página',
+        previewBw: 'Vista Impresión B/N',
+        exportHtml: 'Exportar HTML Impr.',
+        printRecipe: 'Imprimir Receta',
+        colIngredients: 'Ingredientes',
+        colStage: 'Fase',
+        colFinish: 'Acabado',
+        gridHint: 'Pasa sobre una celda para ver su flujo • Haz clic para tachar',
+        sharedSplitHint: 'Los pasos compartidos se dividen en filas paralelas',
+        presetNames: {
+          carbonara: 'Espaguetis a la Carbonara',
+          cookies: 'Galletas con Chispas de Chocolate',
+          tiramisu: 'Tiramisú Clásico'
+        },
+        quickTechTags: ['BATIR', 'HERVIR', 'SALTEAR', 'INCORPORAR', 'HORNEAR', 'COCER LENTO', 'ENFRIAR', 'AMASAR', 'EMULSIONAR', 'EMPLATAR'],
+        quickParamTags: ['180°C', '200°C', '12 MIN', '10 MIN', 'FUEGO MEDIO', '4H FRÍO'],
+        toastCycle: 'Ciclo bloqueado: el flujo debe ser monodireccional',
+        toastOutSrc: 'El plato final no puede tener salidas',
+        toastIngDst: 'Los ingredientes son entradas iniciales',
+        toastAligned: 'Grafo alineado de izquierda a derecha',
+        toastCopied: 'Copiado al portapapeles',
+        toastSavedApp: 'Aplicación descargada (.html)'
+      },
+
+      ja: {
+        flag: '🇯🇵',
+        code: 'JA',
+        appTitle: 'グリッドレシピ生成ツール',
+        appSubtitle: '一方向調理フローグラフ＆印刷用マトリクス',
+        tabGraph: 'フローグラフ',
+        tabGrid: 'グリッドレシピ',
+        newBtn: '+ 新規',
+        downloadApp: 'アプリ保存 (.html)',
+        preStartTitle: '調理前の準備',
+        preStartSub: '下ごしらえ・事前工程',
+        preStartPlaceholder: '例：オーブンを180°Cに予熱する...',
+        preStartEmpty: '事前工程はまだありません。調理前の準備を追加してください。',
+        addBtn: '追加',
+        addIng: '+ 材料',
+        addLav: '+ 調理工程',
+        addOut: '+ 仕上げ・盛付',
+        autoLayout: '自動整列',
+        exportJson: 'JSON出力',
+        importJson: 'JSON読込',
+        inspectorTitle: 'インスペクター',
+        inspectorNone: 'キャンバス上のノードまたは接続線を選択して編集します。',
+        typeNone: '未選択',
+        typeIngredient: '材料',
+        typeLavoration: '調理工程',
+        typeOutput: '仕上げ・盛付',
+        typeConnection: '接続線',
+        nextBtn: '+ 次工程',
+        fieldIngName: '材料名',
+        fieldQty: '分量',
+        fieldUnit: '単位',
+        fieldNote: '下処理メモ（任意）',
+        fieldNotePh: '例：みじん切り、常温に戻す',
+        fieldLavAction: '調理アクション',
+        fieldOutAction: '仕上げ・盛り付け',
+        fieldActiveTags: '適用中のタグ（×で削除）',
+        fieldNoTags: 'タグ未設定',
+        fieldCustomTagPh: 'カスタムタグ（例：190°C, 8 MIN）...',
+        fieldQuickTech: '調理技法タグ',
+        fieldQuickParam: 'オーブン・時間タグ',
+        deleteNode: 'ノードを削除',
+        deleteEdge: '接続を削除',
+        fromLabel: '接続元',
+        toLabel: '接続先',
+        yieldLabel: '分量:',
+        servingsUnit: '人分',
+        landscape: '横向き',
+        portrait: '縦向き',
+        fitPage: '1ページ幅に収める',
+        previewBw: '白黒印刷プレビュー',
+        exportHtml: '印刷用HTML出力',
+        printRecipe: 'レシピを印刷',
+        colIngredients: '材料',
+        colStage: '工程',
+        colFinish: '仕上げ',
+        gridHint: 'セルにカーソルを合わせて流れを確認 • クリックで完了チェック',
+        sharedSplitHint: '共有される中間工程は並列行に分割されます',
+        presetNames: {
+          carbonara: 'スパゲッティ・カルボナーラ',
+          cookies: 'チョコチップクッキー',
+          tiramisu: 'クラシック・ティラミス'
+        },
+        quickTechTags: ['泡立てる', '茹でる', '炒める', 'さっくり混ぜる', '焼成', '弱火で煮る', '冷やす', 'こねる', '乳化', '盛り付け'],
+        quickParamTags: ['180°C', '200°C', '12 MIN', '10 MIN', '中火', '4H 冷蔵'],
+        toastCycle: 'ループ防止：フローは左から右の一方向である必要があります',
+        toastOutSrc: '仕上げノードから先へは接続できません',
+        toastIngDst: '材料ノードは開始点のため入力接続できません',
+        toastAligned: '左から右へ自動整列しました',
+        toastCopied: 'クリップボードにコピーしました',
+        toastSavedApp: 'オフライン用HTMLファイルを保存しました'
+      },
+
+      pt: {
+        flag: '🇵🇹',
+        code: 'PT',
+        appTitle: 'Gerador de Receitas em Grelha',
+        appSubtitle: 'Grafo Culinário Monodirecional e Matriz Imprimível',
+        tabGraph: 'Grafo de Fluxo',
+        tabGrid: 'Receita em Grelha',
+        newBtn: '+ Nova',
+        downloadApp: 'Guardar App (.html)',
+        preStartTitle: 'Antes de Começar',
+        preStartSub: 'Mise en place e passos prévios',
+        preStartPlaceholder: 'ex. Pré-aquecer o forno a 180°C...',
+        preStartEmpty: 'Sem passos prévios. Adicione tarefas antes de iniciar a receita.',
+        addBtn: 'Adicionar',
+        addIng: '+ Ingrediente',
+        addLav: '+ Preparação',
+        addOut: '+ Prato Final',
+        autoLayout: 'Alinhar',
+        exportJson: 'Exportar JSON',
+        importJson: 'Importar JSON',
+        inspectorTitle: 'Inspetor',
+        inspectorNone: 'Selecione um nó ou ligação na tela para editar propriedades e etiquetas.',
+        typeNone: 'Nenhum',
+        typeIngredient: 'Ingrediente',
+        typeLavoration: 'Preparação',
+        typeOutput: 'Prato Final',
+        typeConnection: 'Ligação',
+        nextBtn: '+ Seguinte',
+        fieldIngName: 'Nome do Ingrediente',
+        fieldQty: 'Quantidade',
+        fieldUnit: 'Unidade',
+        fieldNote: 'Nota prep. (Opcional)',
+        fieldNotePh: 'ex. picado fino, temp. ambiente',
+        fieldLavAction: 'Ação de Preparação',
+        fieldOutAction: 'Empratamento Final',
+        fieldActiveTags: 'Etiquetas Ativas (Clicar × para remover)',
+        fieldNoTags: 'Sem etiquetas ainda',
+        fieldCustomTagPh: 'Etiqueta própria (ex. 190°C, 8 MIN)...',
+        fieldQuickTech: 'Etiquetas de Técnica',
+        fieldQuickParam: 'Etiquetas Forno e Tempo',
+        deleteNode: 'Eliminar Nó',
+        deleteEdge: 'Eliminar Ligação',
+        fromLabel: 'De',
+        toLabel: 'Para',
+        yieldLabel: 'Doses:',
+        servingsUnit: 'DOSES',
+        landscape: 'Horizontal',
+        portrait: 'Vertical',
+        fitPage: 'Ajustar 1 Página',
+        previewBw: 'Pré-visualizar P&B',
+        exportHtml: 'Exportar HTML Impr.',
+        printRecipe: 'Imprimir Receita',
+        colIngredients: 'Ingredientes',
+        colStage: 'Fase',
+        colFinish: 'Acabamento',
+        gridHint: 'Passe o rato sobre uma célula para ver o fluxo • Clique para marcar',
+        sharedSplitHint: 'Passos partilhados foram divididos em linhas paralelas',
+        presetNames: {
+          carbonara: 'Esparguete à Carbonara',
+          cookies: 'Bolachas com Pepitas de Chocolate',
+          tiramisu: 'Tiramisu Clássico'
+        },
+        quickTechTags: ['BATER', 'FERVER', 'REFOGAR', 'ENVOLVER', 'ASSAR', 'COZINHAR LENTO', 'ARREFECER', 'AMASSAR', 'EMULSIONAR', 'EMPRATAR'],
+        quickParamTags: ['180°C', '200°C', '12 MIN', '10 MIN', 'LUME MÉDIO', '4H FRIO'],
+        toastCycle: 'Ciclo bloqueado: o fluxo deve ser monodirecional',
+        toastOutSrc: 'O prato final não pode ter saídas',
+        toastIngDst: 'Os ingredientes são pontos de partida',
+        toastAligned: 'Grafo alinhado da esquerda para a direita',
+        toastCopied: 'Copiado para a área de transferência',
+        toastSavedApp: 'Aplicação autónoma guardada (.html)'
+      }
+    };
+
+    const UNIT_OPTIONS = ['g', 'kg', 'ml', 'l', 'pcs', 'tbsp', 'tsp', 'cup', 'pinch', 'cloves', 'to taste'];
+
+    // =========================================================================
+    // LOCALIZED BUILT-IN PRESETS (ALL 7 LANGUAGES)
+    // =========================================================================
+    const PRESETS = {
+      carbonara: {
+        baseServings: 4,
+        l10n: {
+          en: {
+            title: 'Classic Spaghetti Carbonara',
+            preStartSteps: [
+              'Bring a large pot of salted water to a rolling boil',
+              'Warm 4 ceramic serving bowls slightly so the emulsion stays glossy',
+              'Finely grate Pecorino Romano and coarsely crack black pepper'
+            ],
+            nodes: {
+              ing_pasta: { name: 'Spaghetti', note: 'bronze-die' },
+              ing_guanciale: { name: 'Guanciale', note: '5mm strips' },
+              ing_yolks: { name: 'Egg Yolks', note: 'room temp' },
+              ing_pecorino: { name: 'Pecorino Romano', note: 'finely grated' },
+              ing_pepper: { name: 'Black Pepper', note: 'freshly cracked' },
+              lav_boil: { title: 'Cook pasta shy of al dente; reserve 1 cup starchy water', tags: ['BOIL', '9 MIN'] },
+              lav_render: { title: 'Render guanciale in cold pan until fat is clear and crisp', tags: ['SAUTÉ', 'MED HEAT', '7 MIN'] },
+              lav_paste: { title: 'Whisk yolks, Pecorino, and pepper into a thick paste', tags: ['WHISK'] },
+              lav_emulsify: { title: 'Toss drained pasta in guanciale pan off heat; temper yolk paste with pasta water and toss briskly', tags: ['EMULSIFY', '2 MIN'] },
+              out_serve: { title: 'Twirl into warm bowls; finish with crisp guanciale & extra Pecorino', tags: ['PLATE'] }
+            }
+          },
+          fr: {
+            title: 'Spaghetti Carbonara Classique',
+            preStartSteps: [
+              'Porter une grande marmite d’eau salée à ébullition',
+              'Tiédir 4 assiettes creuses pour garder la sauce onctueuse',
+              'Râper finement le Pecorino Romano et concasser le poivre noir'
+            ],
+            nodes: {
+              ing_pasta: { name: 'Spaghetti', note: 'tréfilés au bronze' },
+              ing_guanciale: { name: 'Guanciale', note: 'bâtonnets 5mm' },
+              ing_yolks: { name: 'Jaunes d’œufs', note: 'temp. ambiante' },
+              ing_pecorino: { name: 'Pecorino Romano', note: 'finement râpé' },
+              ing_pepper: { name: 'Poivre Noir', note: 'fraîchement concassé' },
+              lav_boil: { title: 'Cuire les pâtes al dente ; réserver une louche d’eau de cuisson', tags: ['BOUILLIR', '9 MIN'] },
+              lav_render: { title: 'Faire fondre le guanciale à feu moyen jusqu’à ce qu’il soit croustillant', tags: ['SAUTER', 'FEU MOYEN', '7 MIN'] },
+              lav_paste: { title: 'Fouetter les jaunes, le Pecorino et le poivre en pâte épaisse', tags: ['FOUETTER'] },
+              lav_emulsify: { title: 'Mélanger les pâtes hors du feu avec le gras ; détendre la pâte aux œufs avec l’eau et émulsionner', tags: ['ÉMULSIONNER', '2 MIN'] },
+              out_serve: { title: 'Dresser en nid ; garnir de guanciale croustillant et de Pecorino', tags: ['DRESSER'] }
+            }
+          },
+          it: {
+            title: 'Spaghetti alla Carbonara',
+            preStartSteps: [
+              'Portare a bollore una pentola capiente di acqua salata',
+              'Intiepidire 4 fondine per mantenere cremosa l’emulsione',
+              'Grattugiare finemente il Pecorino Romano e macinare il pepe nero'
+            ],
+            nodes: {
+              ing_pasta: { name: 'Spaghetti', note: 'trafilati al bronzo' },
+              ing_guanciale: { name: 'Guanciale', note: 'listarelle 5mm' },
+              ing_yolks: { name: 'Tuorli d’uovo', note: 'temp. ambiente' },
+              ing_pecorino: { name: 'Pecorino Romano', note: 'grattugiato fine' },
+              ing_pepper: { name: 'Pepe Nero', note: 'macinato fresco' },
+              lav_boil: { title: 'Cuocere gli spaghetti al dente; conservare un mestolo di acqua di cottura', tags: ['BOLLIRE', '9 MIN'] },
+              lav_render: { title: 'Rosolare il guanciale partendo da padella fredda finché è croccante', tags: ['ROSOLARE', 'FUOCO MEDIO', '7 MIN'] },
+              lav_paste: { title: 'Sbattere tuorli, Pecorino e pepe fino a ottenere una crema densa', tags: ['SBATTERE'] },
+              lav_emulsify: { title: 'Saltare la pasta nel grasso fuori dal fuoco; unire la crema e mantecare con acqua di cottura', tags: ['EMULSIONARE', '2 MIN'] },
+              out_serve: { title: 'Impiattare a nido; completare con guanciale croccante e Pecorino', tags: ['IMPIATTARE'] }
+            }
+          },
+          de: {
+            title: 'Klassische Spaghetti Carbonara',
+            preStartSteps: [
+              'Einen großen Topf mit Salzwasser zum Kochen bringen',
+              '4 tiefe Teller leicht vorwärmen, damit die Sauce cremig bleibt',
+              'Pecorino Romano fein reiben und schwarzen Pfeffer grob mahlen'
+            ],
+            nodes: {
+              ing_pasta: { name: 'Spaghetti', note: 'Bronze-Matrize' },
+              ing_guanciale: { name: 'Guanciale', note: '5mm Streifen' },
+              ing_yolks: { name: 'Eigelb', note: 'zimmerwarm' },
+              ing_pecorino: { name: 'Pecorino Romano', note: 'fein gerieben' },
+              ing_pepper: { name: 'Schwarzer Pfeffer', note: 'grob geschrotet' },
+              lav_boil: { title: 'Pasta knapp al dente kochen; 1 Tasse Nudelwasser auffangen', tags: ['KOCHEN', '9 MIN'] },
+              lav_render: { title: 'Guanciale in kalter Pfanne knusprig auslassen', tags: ['ANBRATEN', 'MITTL. HITZE', '7 MIN'] },
+              lav_paste: { title: 'Eigelb, Pecorino und Pfeffer zu einer dicken Paste verquirlen', tags: ['SCHLAGEN'] },
+              lav_emulsify: { title: 'Pasta abseits der Hitze im Fett schwenken; Eigelbpaste mit Nudelwasser cremig emulgieren', tags: ['EMULGIEREN', '2 MIN'] },
+              out_serve: { title: 'Auf vorgewärmten Tellern anrichten und mit knusprigem Guanciale toppen', tags: ['ANRICHTEN'] }
+            }
+          },
+          es: {
+            title: 'Espaguetis a la Carbonara',
+            preStartSteps: [
+              'Poner a hervir una olla grande con agua salada',
+              'Templar 4 platos hondos para mantener la emulsión brillante',
+              'Rallar fino el Pecorino Romano y moler pimienta negra gruesa'
+            ],
+            nodes: {
+              ing_pasta: { name: 'Espaguetis', note: 'trefilados al bronce' },
+              ing_guanciale: { name: 'Guanciale', note: 'tiras de 5mm' },
+              ing_yolks: { name: 'Yemas de huevo', note: 'temp. ambiente' },
+              ing_pecorino: { name: 'Pecorino Romano', note: 'rallado fino' },
+              ing_pepper: { name: 'Pimienta Negra', note: 'recién molida' },
+              lav_boil: { title: 'Cocer la pasta al dente; reservar 1 taza de agua de cocción', tags: ['HERVIR', '9 MIN'] },
+              lav_render: { title: 'Dorar el guanciale desde sartén fría hasta que quede crujiente', tags: ['SALTEAR', 'FUEGO MEDIO', '7 MIN'] },
+              lav_paste: { title: 'Batir yemas, Pecorino y pimienta hasta formar una pasta espesa', tags: ['BATIR'] },
+              lav_emulsify: { title: 'Saltear la pasta fuera del fuego con la grasa; emulsionar la pasta de yema con agua de cocción', tags: ['EMULSIONAR', '2 MIN'] },
+              out_serve: { title: 'Emplatar en nido y terminar con guanciale crujiente y más Pecorino', tags: ['EMPLATAR'] }
+            }
+          },
+          ja: {
+            title: 'スパゲッティ・カルボナーラ',
+            preStartSteps: [
+              '大きな鍋にたっぷりの塩湯を沸かす',
+              'ソースが冷めないよう深皿4枚を軽く温めておく',
+              'ペコリーノ・ロマーノを細かくすりおろし、黒胡椒を粗挽きにする'
+            ],
+            nodes: {
+              ing_pasta: { name: 'スパゲッティ', note: 'ブロンズダイス' },
+              ing_guanciale: { name: 'グアンチャーレ', note: '5mm幅の拍子木切り' },
+              ing_yolks: { name: '卵黄', note: '常温' },
+              ing_pecorino: { name: 'ペコリーノ・ロマーノ', note: 'すりおろし' },
+              ing_pepper: { name: '黒胡椒', note: '粗挽き' },
+              lav_boil: { title: 'アルデンテ手前まで茹で、茹で汁を1カップ取り置く', tags: ['茹でる', '9 MIN'] },
+              lav_render: { title: '冷たいフライパンから脂を引き出しカリッと炒める', tags: ['炒める', '中火', '7 MIN'] },
+              lav_paste: { title: '卵黄・ペコリーノ・黒胡椒を濃厚なペースト状に混ぜる', tags: ['泡立てる'] },
+              lav_emulsify: { title: '火を止めたフライパンで麺と脂を絡め、茹で汁と卵黄ペーストで素早く乳化させる', tags: ['乳化', '2 MIN'] },
+              out_serve: { title: '温めた皿に盛り付け、カリカリのグアンチャーレとチーズを散らす', tags: ['盛り付け'] }
+            }
+          },
+          pt: {
+            title: 'Esparguete à Carbonara',
+            preStartSteps: [
+              'Levar uma panela grande com água salgada a ferver',
+              'Aquecer ligeiramente 4 pratos fundos para manter o molho cremoso',
+              'Ralar finamente o Pecorino Romano e moer pimenta preta grossa'
+            ],
+            nodes: {
+              ing_pasta: { name: 'Esparguete', note: 'trefilado a bronze' },
+              ing_guanciale: { name: 'Guanciale', note: 'tiras de 5mm' },
+              ing_yolks: { name: 'Gemas de ovo', note: 'temp. ambiente' },
+              ing_pecorino: { name: 'Pecorino Romano', note: 'ralado fino' },
+              ing_pepper: { name: 'Pimenta Preta', note: 'moída na hora' },
+              lav_boil: { title: 'Cozer a massa al dente; reservar 1 chávena da água da cozedura', tags: ['FERVER', '9 MIN'] },
+              lav_render: { title: 'Saltear o guanciale desde frigideira fria até ficar crocante', tags: ['REFOGAR', 'LUME MÉDIO', '7 MIN'] },
+              lav_paste: { title: 'Bater gemas, Pecorino e pimenta até formar uma pasta espessa', tags: ['BATER'] },
+              lav_emulsify: { title: 'Envolver a massa fora do lume na gordura; emulsionar a pasta de gemas com água da cozedura', tags: ['EMULSIONAR', '2 MIN'] },
+              out_serve: { title: 'Empratar e finalizar com guanciale crocante e Pecorino extra', tags: ['EMPRATAR'] }
+            }
+          }
+        },
+        nodes: [
+          { id: 'ing_pasta', type: 'ingredient', x: 40, y: 50, qty: 400, unit: 'g' },
+          { id: 'ing_guanciale', type: 'ingredient', x: 40, y: 175, qty: 180, unit: 'g' },
+          { id: 'ing_yolks', type: 'ingredient', x: 40, y: 310, qty: 6, unit: 'pcs' },
+          { id: 'ing_pecorino', type: 'ingredient', x: 40, y: 435, qty: 90, unit: 'g' },
+          { id: 'ing_pepper', type: 'ingredient', x: 40, y: 560, qty: 2, unit: 'tsp' },
+          { id: 'lav_boil', type: 'lavoration', x: 350, y: 50 },
+          { id: 'lav_render', type: 'lavoration', x: 350, y: 175 },
+          { id: 'lav_paste', type: 'lavoration', x: 350, y: 425 },
+          { id: 'lav_emulsify', type: 'lavoration', x: 680, y: 210 },
+          { id: 'out_serve', type: 'output', x: 1000, y: 210 }
+        ],
+        edges: [
+          { id: 'e1', from: 'ing_pasta', to: 'lav_boil' },
+          { id: 'e2', from: 'ing_guanciale', to: 'lav_render' },
+          { id: 'e3', from: 'ing_yolks', to: 'lav_paste' },
+          { id: 'e4', from: 'ing_pecorino', to: 'lav_paste' },
+          { id: 'e5', from: 'ing_pepper', to: 'lav_paste' },
+          { id: 'e6', from: 'lav_boil', to: 'lav_emulsify' },
+          { id: 'e7', from: 'lav_render', to: 'lav_emulsify' },
+          { id: 'e8', from: 'lav_paste', to: 'lav_emulsify' },
+          { id: 'e9', from: 'lav_emulsify', to: 'out_serve' }
+        ]
+      },
+
+      cookies: {
+        baseServings: 16,
+        l10n: {
+          en: {
+            title: 'Brown-Butter Chocolate Chip Cookies',
+            preStartSteps: [
+              'Preheat oven to 180°C and line two baking trays with parchment paper',
+              'Bring eggs to room temperature and chop dark chocolate into chunks'
+            ],
+            nodes: {
+              c_butter: { name: 'Unsalted Butter', note: 'cubed' },
+              c_brown: { name: 'Dark Brown Sugar', note: 'packed' },
+              c_white: { name: 'Caster Sugar', note: '' },
+              c_eggs: { name: 'Eggs (1 Whole + 1 Yolk)', note: 'room temp' },
+              c_flour: { name: 'All-Purpose Flour', note: '' },
+              c_soda: { name: 'Baking Soda & Salt', note: 'fine sea salt' },
+              c_choc: { name: '70% Dark Chocolate', note: 'hand-chopped' },
+              c_brown_lav: { title: 'Melt butter until nutty golden brown solids form; cool slightly', tags: ['SIMMER', 'MED HEAT', '5 MIN'] },
+              c_whisk_wet: { title: 'Whisk browned butter with sugars, then beat in eggs until pale ribbon', tags: ['WHISK'] },
+              c_sift_dry: { title: 'Whisk flour, baking soda, and sea salt together', tags: ['WHISK'] },
+              c_fold_dough: { title: 'Fold dry mix and chocolate chunks into batter; chill dough', tags: ['FOLD', 'CHILL', '30 MIN'] },
+              c_bake: { title: 'Scoop 55g mounds onto parchment; bake until edges are golden & centers soft', tags: ['BAKE', '180°C', '12 MIN'] }
+            }
+          },
+          fr: {
+            title: 'Cookies au Beurre Noisette & Chocolat',
+            preStartSteps: [
+              'Préchauffer le four à 180°C et chemiser deux plaques de papier cuisson',
+              'Sortir les œufs à température ambiante et concasser le chocolat noir'
+            ],
+            nodes: {
+              c_butter: { name: 'Beurre Doux', note: 'en cubes' },
+              c_brown: { name: 'Sucre Muscovado', note: 'tassé' },
+              c_white: { name: 'Sucre Fin', note: '' },
+              c_eggs: { name: 'Œufs (1 entier + 1 jaune)', note: 'temp. ambiante' },
+              c_flour: { name: 'Farine T55', note: '' },
+              c_soda: { name: 'Bicarbonate & Sel', note: 'sel fin' },
+              c_choc: { name: 'Chocolat Noir 70%', note: 'concassé' },
+              c_brown_lav: { title: 'Cuire le beurre jusqu’à coloration noisette ; laisser tiédir', tags: ['MIJOTER', 'FEU MOYEN', '5 MIN'] },
+              c_whisk_wet: { title: 'Fouetter le beurre noisette avec les sucres puis incorporer les œufs', tags: ['FOUETTER'] },
+              c_sift_dry: { title: 'Mélanger la farine, le bicarbonate et le sel fin', tags: ['FOUETTER'] },
+              c_fold_dough: { title: 'Incorporer les poudres et le chocolat sans trop travailler ; réfrigérer', tags: ['INCORPORER', 'RÉFRIGÉRER', '30 MIN'] },
+              c_bake: { title: 'Former des boules de 55g ; enfourner jusqu’à ce que les bords soient dorés', tags: ['CUIRE', '180°C', '12 MIN'] }
+            }
+          },
+          it: {
+            title: 'Biscotti al Burro Nocciola e Cioccolato',
+            preStartSteps: [
+              'Preriscaldare il forno a 180°C e foderare due teglie con carta forno',
+              'Portare le uova a temperatura ambiente e tritare grossolanamente il cioccolato'
+            ],
+            nodes: {
+              c_butter: { name: 'Burro non salato', note: 'a cubetti' },
+              c_brown: { name: 'Zucchero di Canna Scuro', note: '' },
+              c_white: { name: 'Zucchero Semolato', note: '' },
+              c_eggs: { name: 'Uova (1 intero + 1 tuorlo)', note: 'temp. ambiente' },
+              c_flour: { name: 'Farina 00', note: '' },
+              c_soda: { name: 'Bicarbonato e Sale', note: 'sale fino' },
+              c_choc: { name: 'Cioccolato Fondente 70%', note: 'a pezzi' },
+              c_brown_lav: { title: 'Fondere il burro fino a doratura nocciola; lasciar intiepidire', tags: ['SOBBOLLIRE', 'FUOCO MEDIO', '5 MIN'] },
+              c_whisk_wet: { title: 'Sbattere burro nocciola e zuccheri, poi unire le uova fino a composto chiaro', tags: ['SBATTERE'] },
+              c_sift_dry: { title: 'Mescolare farina, bicarbonato e sale fino', tags: ['SBATTERE'] },
+              c_fold_dough: { title: 'Incorporare le polveri e il cioccolato; far riposare in frigo', tags: ['INCORPORARE', 'RAFFREDDARE', '30 MIN'] },
+              c_bake: { title: 'Formare palline da 55g su teglia; cuocere finché i bordi sono dorati', tags: ['INFORNARE', '180°C', '12 MIN'] }
+            }
+          },
+          de: {
+            title: 'Braune-Butter Chocolate Chip Cookies',
+            preStartSteps: [
+              'Backofen auf 180°C vorheizen und zwei Bleche mit Backpapier auslegen',
+              'Eier auf Zimmertemperatur bringen und Zartbitterschokolade grob hacken'
+            ],
+            nodes: {
+              c_butter: { name: 'Ungesalzene Butter', note: 'gewürfelt' },
+              c_brown: { name: 'Brauner Zucker', note: '' },
+              c_white: { name: 'Feiner Zucker', note: '' },
+              c_eggs: { name: 'Eier (1 Ei + 1 Eigelb)', note: 'zimmerwarm' },
+              c_flour: { name: 'Weizenmehl Type 405', note: '' },
+              c_soda: { name: 'Natron & Meersalz', note: 'fein' },
+              c_choc: { name: 'Zartbitterschokolade 70%', note: 'gehackt' },
+              c_brown_lav: { title: 'Butter nussbraun schmelzen lassen; leicht abkühlen', tags: ['KÖCHELN', 'MITTL. HITZE', '5 MIN'] },
+              c_whisk_wet: { title: 'Braune Butter mit Zucker schaumig schlagen, dann Eier unterrühren', tags: ['SCHLAGEN'] },
+              c_sift_dry: { title: 'Mehl, Natron und Salz vermischen', tags: ['SCHLAGEN'] },
+              c_fold_dough: { title: 'Trockene Zutaten und Schokolade unterheben; Teig kühlen', tags: ['UNTERHEBEN', 'KÜHLEN', '30 MIN'] },
+              c_bake: { title: '55g Teigkugeln aufs Blech setzen und goldbraun backen', tags: ['BACKEN', '180°C', '12 MIN'] }
+            }
+          },
+          es: {
+            title: 'Galletas de Mantequilla Tostada y Chocolate',
+            preStartSteps: [
+              'Precalentar el horno a 180°C y forrar dos bandejas con papel vegetal',
+              'Templar los huevos a temperatura ambiente y trocear el chocolate negro'
+            ],
+            nodes: {
+              c_butter: { name: 'Mantequilla sin sal', note: 'en cubos' },
+              c_brown: { name: 'Azúcar Moreno Oscuro', note: '' },
+              c_white: { name: 'Azúcar Blanco', note: '' },
+              c_eggs: { name: 'Huevos (1 entero + 1 yema)', note: 'temp. ambiente' },
+              c_flour: { name: 'Harina de Trigo', note: '' },
+              c_soda: { name: 'Bicarbonato y Sal', note: 'sal fina' },
+              c_choc: { name: 'Chocolate Negro 70%', note: 'troceado' },
+              c_brown_lav: { title: 'Fundir la mantequilla hasta dorar con aroma a avellana; templar', tags: ['COCER LENTO', 'FUEGO MEDIO', '5 MIN'] },
+              c_whisk_wet: { title: 'Batir la mantequilla tostada con los azúcares y añadir los huevos', tags: ['BATIR'] },
+              c_sift_dry: { title: 'Mezclar la harina, el bicarbonato y la sal fina', tags: ['BATIR'] },
+              c_fold_dough: { title: 'Incorporar los secos y el chocolate; refrigerar la masa', tags: ['INCORPORAR', 'ENFRIAR', '30 MIN'] },
+              c_bake: { title: 'Formar bolas de 55g y hornear hasta que los bordes estén dorados', tags: ['HORNEAR', '180°C', '12 MIN'] }
+            }
+          },
+          ja: {
+            title: '焦がしバターのチョコチップクッキー',
+            preStartSteps: [
+              'オーブンを180°Cに予熱し、天板2枚にクッキングシートを敷く',
+              '卵を常温に戻し、ダークチョコレートを粗く刻む'
+            ],
+            nodes: {
+              c_butter: { name: '無塩バター', note: '角切り' },
+              c_brown: { name: 'ブラウンシュガー', note: '' },
+              c_white: { name: 'グラニュー糖', note: '' },
+              c_eggs: { name: '全卵1個＋卵黄1個', note: '常温' },
+              c_flour: { name: '薄力粉', note: '' },
+              c_soda: { name: '重曹・塩', note: '細粒塩' },
+              c_choc: { name: 'ダークチョコ 70%', note: '粗刻み' },
+              c_brown_lav: { title: 'バターを香ばしいきつね色になるまで加熱し、粗熱を取る', tags: ['弱火で煮る', '中火', '5 MIN'] },
+              c_whisk_wet: { title: '焦がしバターと砂糖をすり混ぜ、卵を加えて白っぽくなるまで泡立てる', tags: ['泡立てる'] },
+              c_sift_dry: { title: '薄力粉・重曹・塩を均一に混ぜ合わせる', tags: ['泡立てる'] },
+              c_fold_dough: { title: '粉類と刻みチョコをさっくり混ぜ合わせ、冷蔵庫で休ませる', tags: ['さっくり混ぜる', '冷やす', '30 MIN'] },
+              c_bake: { title: '55gずつ丸めて並べ、縁がきつね色になるまで焼成する', tags: ['焼成', '180°C', '12 MIN'] }
+            }
+          },
+          pt: {
+            title: 'Bolachas de Manteiga Tostada e Chocolate',
+            preStartSteps: [
+              'Pré-aquecer o forno a 180°C e forrar dois tabuleiros com papel vegetal',
+              'Deixar os ovos à temperatura ambiente e picar o chocolate preto'
+            ],
+            nodes: {
+              c_butter: { name: 'Manteiga sem sal', note: 'em cubos' },
+              c_brown: { name: 'Açúcar Mascavado', note: '' },
+              c_white: { name: 'Açúcar Fino', note: '' },
+              c_eggs: { name: 'Ovos (1 inteiro + 1 gema)', note: 'temp. ambiente' },
+              c_flour: { name: 'Farinha de Trigo', note: '' },
+              c_soda: { name: 'Bicarbonato e Sal', note: 'sal fino' },
+              c_choc: { name: 'Chocolate Preto 70%', note: 'picado' },
+              c_brown_lav: { title: 'Derreter a manteiga até dourar com aroma a avelã; arrefecer ligeiramente', tags: ['COZINHAR LENTO', 'LUME MÉDIO', '5 MIN'] },
+              c_whisk_wet: { title: 'Bater a manteiga tostada com os açúcares e juntar os ovos', tags: ['BATER'] },
+              c_sift_dry: { title: 'Misturar a farinha, o bicarbonato e o sal fino', tags: ['BATER'] },
+              c_fold_dough: { title: 'Envolver os secos e o chocolate; refrigerar a massa', tags: ['ENVOLVER', 'ARREFECER', '30 MIN'] },
+              c_bake: { title: 'Formar bolas de 55g e assar até os bordos ficarem dourados', tags: ['ASSAR', '180°C', '12 MIN'] }
+            }
+          }
+        },
+        nodes: [
+          { id: 'c_butter', type: 'ingredient', x: 40, y: 50, qty: 170, unit: 'g' },
+          { id: 'c_brown', type: 'ingredient', x: 40, y: 175, qty: 165, unit: 'g' },
+          { id: 'c_white', type: 'ingredient', x: 40, y: 300, qty: 75, unit: 'g' },
+          { id: 'c_eggs', type: 'ingredient', x: 40, y: 425, qty: 2, unit: 'pcs' },
+          { id: 'c_flour', type: 'ingredient', x: 40, y: 550, qty: 240, unit: 'g' },
+          { id: 'c_soda', type: 'ingredient', x: 40, y: 675, qty: 1, unit: 'tsp' },
+          { id: 'c_choc', type: 'ingredient', x: 40, y: 800, qty: 200, unit: 'g' },
+          { id: 'c_brown_lav', type: 'lavoration', x: 350, y: 50 },
+          { id: 'c_whisk_wet', type: 'lavoration', x: 660, y: 210 },
+          { id: 'c_sift_dry', type: 'lavoration', x: 350, y: 600 },
+          { id: 'c_fold_dough', type: 'lavoration', x: 970, y: 410 },
+          { id: 'c_bake', type: 'output', x: 1290, y: 410 }
+        ],
+        edges: [
+          { id: 'ce1', from: 'c_butter', to: 'c_brown_lav' },
+          { id: 'ce2', from: 'c_brown_lav', to: 'c_whisk_wet' },
+          { id: 'ce3', from: 'c_brown', to: 'c_whisk_wet' },
+          { id: 'ce4', from: 'c_white', to: 'c_whisk_wet' },
+          { id: 'ce5', from: 'c_eggs', to: 'c_whisk_wet' },
+          { id: 'ce6', from: 'c_flour', to: 'c_sift_dry' },
+          { id: 'ce7', from: 'c_soda', to: 'c_sift_dry' },
+          { id: 'ce8', from: 'c_whisk_wet', to: 'c_fold_dough' },
+          { id: 'ce9', from: 'c_sift_dry', to: 'c_fold_dough' },
+          { id: 'ce10', from: 'c_choc', to: 'c_fold_dough' },
+          { id: 'ce11', from: 'c_fold_dough', to: 'c_bake' }
+        ]
+      },
+
+      tiramisu: {
+        baseServings: 8,
+        l10n: {
+          en: {
+            title: 'Classic Italian Tiramisu',
+            preStartSteps: [
+              'Brew strong espresso and pour into a shallow dish to cool completely',
+              'Prepare a 22×22 cm ceramic dish and keep mascarpone chilled'
+            ],
+            nodes: {
+              t_yolks: { name: 'Pasteurized Egg Yolks', note: '' },
+              t_sugar: { name: 'Caster Sugar', note: '' },
+              t_masc: { name: 'Mascarpone Cheese', note: 'chilled' },
+              t_cream: { name: 'Heavy Whipping Cream', note: '35% fat, cold' },
+              t_espresso: { name: 'Cooled Espresso', note: 'unsweetened' },
+              t_savoiardi: { name: 'Savoiardi Ladyfingers', note: 'crisp' },
+              t_cocoa: { name: 'Unsweetened Cocoa Powder', note: 'Dutch-process' },
+              t_sabayon: { title: 'Whisk yolks and sugar until pale, thick, and tripled in volume', tags: ['WHISK', '5 MIN'] },
+              t_cream_fold: { title: 'Fold cold mascarpone into yolk ribbon, then fold in softly whipped cream', tags: ['FOLD'] },
+              t_dip: { title: 'Briefly dip each ladyfinger in espresso (1 sec per side) without soaking', tags: ['EMULSIFY'] },
+              t_assemble: { title: 'Layer dipped biscuits and cream twice; chill and dust with cocoa before serving', tags: ['CHILL', '4H CHILL', 'PLATE'] }
+            }
+          },
+          fr: {
+            title: 'Tiramisu Italien Classique',
+            preStartSteps: [
+              'Préparer un café expresso corsé et le laisser refroidir complètement',
+              'Préparer un plat creux 22×22 cm et garder le mascarpone bien frais'
+            ],
+            nodes: {
+              t_yolks: { name: 'Jaunes d’œufs pasteurisés', note: '' },
+              t_sugar: { name: 'Sucre Fin', note: '' },
+              t_masc: { name: 'Mascarpone', note: 'froid' },
+              t_cream: { name: 'Crème Liquide Entière', note: '35% MG, froide' },
+              t_espresso: { name: 'Café Expresso Refroidi', note: 'non sucré' },
+              t_savoiardi: { name: 'Biscuits Savoiardi', note: 'secs' },
+              t_cocoa: { name: 'Cacao Amer en Poudre', note: '' },
+              t_sabayon: { title: 'Fouetter les jaunes et le sucre jusqu’à obtenir un ruban pâle et mousseux', tags: ['FOUETTER', '5 MIN'] },
+              t_cream_fold: { title: 'Incorporer le mascarpone froid puis la crème montée souple', tags: ['INCORPORER'] },
+              t_dip: { title: 'Tremper rapidement les biscuits dans l’expresso (1 sec par face)', tags: ['MIJOTER'] },
+              t_assemble: { title: 'Alterner deux couches de biscuits et de crème ; réfrigérer et poudrer de cacao', tags: ['RÉFRIGÉRER', '4H FROID', 'DRESSER'] }
+            }
+          },
+          it: {
+            title: 'Tiramisù Classico Italiano',
+            preStartSteps: [
+              'Preparare un caffè espresso forte e lasciarlo raffreddare completamente',
+              'Preparare una pirofila 22×22 cm e tenere il mascarpone in frigorifero'
+            ],
+            nodes: {
+              t_yolks: { name: 'Tuorli pastorizzati', note: '' },
+              t_sugar: { name: 'Zucchero Semolato', note: '' },
+              t_masc: { name: 'Mascarpone', note: 'freddo' },
+              t_cream: { name: 'Panna Fresca Liquida', note: 'fredda' },
+              t_espresso: { name: 'Caffè Espresso Freddo', note: 'amaro' },
+              t_savoiardi: { name: 'Savoiardi', note: 'croccanti' },
+              t_cocoa: { name: 'Cacao Amaro in Polvere', note: '' },
+              t_sabayon: { title: 'Montare tuorli e zucchero fino a ottenere un composto chiaro e spumoso', tags: ['SBATTERE', '5 MIN'] },
+              t_cream_fold: { title: 'Incorporare il mascarpone freddo e poi la panna semi-montata', tags: ['INCORPORARE'] },
+              t_dip: { title: 'Inzuppare velocemente i savoiardi nel caffè (1 sec per lato)', tags: ['EMULSIONARE'] },
+              t_assemble: { title: 'Alternare due strati di savoiardi e crema; raffreddare e spolverare con cacao', tags: ['RAFFREDDARE', '4H FRIGO', 'IMPIATTARE'] }
+            }
+          },
+          de: {
+            title: 'Klassisches Italienisches Tiramisu',
+            preStartSteps: [
+              'Starken Espresso brühen und in einer flachen Schale vollständig abkühlen lassen',
+              'Eine 22×22 cm Form bereitstellen und Mascarpone kalt halten'
+            ],
+            nodes: {
+              t_yolks: { name: 'Pasteurisierte Eigelbe', note: '' },
+              t_sugar: { name: 'Feiner Zucker', note: '' },
+              t_masc: { name: 'Mascarpone', note: 'gekühlt' },
+              t_cream: { name: 'Schlagsahne', note: 'kalt' },
+              t_espresso: { name: 'Abgekühlter Espresso', note: 'ungesüßt' },
+              t_savoiardi: { name: 'Löffelbiskuits', note: '' },
+              t_cocoa: { name: 'Ungesüßtes Kakaopulver', note: '' },
+              t_sabayon: { title: 'Eigelb und Zucker hell und cremig aufschlagen', tags: ['SCHLAGEN', '5 MIN'] },
+              t_cream_fold: { title: 'Kalte Mascarpone und geschlagene Sahne vorsichtig unterheben', tags: ['UNTERHEBEN'] },
+              t_dip: { title: 'Löffelbiskuits kurz in Espresso tauchen (1 Sek. pro Seite)', tags: ['EMULGIEREN'] },
+              t_assemble: { title: 'Biskuits und Creme zweimal schichten; kühlen und mit Kakao bestäuben', tags: ['KÜHLEN', '4H KÜHLEN', 'ANRICHTEN'] }
+            }
+          },
+          es: {
+            title: 'Tiramisú Clásico Italiano',
+            preStartSteps: [
+              'Preparar café expreso intenso y dejarlo enfriar por completo',
+              'Preparar una fuente de 22×22 cm y mantener el mascarpone frío'
+            ],
+            nodes: {
+              t_yolks: { name: 'Yemas pasteurizadas', note: '' },
+              t_sugar: { name: 'Azúcar Blanco', note: '' },
+              t_masc: { name: 'Queso Mascarpone', note: 'frío' },
+              t_cream: { name: 'Nata para Montar', note: 'fría' },
+              t_espresso: { name: 'Café Expreso Frío', note: 'sin azúcar' },
+              t_savoiardi: { name: 'Bizcochos Savoiardi', note: '' },
+              t_cocoa: { name: 'Cacao Puro en Polvo', note: '' },
+              t_sabayon: { title: 'Batir las yemas con el azúcar hasta triplicar su volumen', tags: ['BATIR', '5 MIN'] },
+              t_cream_fold: { title: 'Incorporar el mascarpone frío y luego la nata semimontada', tags: ['INCORPORAR'] },
+              t_dip: { title: 'Bañar brevemente los bizcochos en el café (1 seg por lado)', tags: ['EMULSIONAR'] },
+              t_assemble: { title: 'Alternar dos capas de bizcocho y crema; refrigerar y espolvorear cacao', tags: ['ENFRIAR', '4H FRÍO', 'EMPLATAR'] }
+            }
+          },
+          ja: {
+            title: 'クラシック・イタリアン・ティラミス',
+            preStartSteps: [
+              '濃いめのエスプレッソを抽出し、浅いバットに入れて完全に冷ます',
+              '22×22cmの器を用意し、マスカルポーネは直前まで冷やしておく'
+            ],
+            nodes: {
+              t_yolks: { name: '殺菌卵黄', note: '' },
+              t_sugar: { name: 'グラニュー糖', note: '' },
+              t_masc: { name: 'マスカルポーネ', note: '冷蔵' },
+              t_cream: { name: '生クリーム', note: '乳脂肪35%・冷蔵' },
+              t_espresso: { name: '冷ましたエスプレッソ', note: '無糖' },
+              t_savoiardi: { name: 'サヴォイアルディ（フィンガービスケット）', note: '' },
+              t_cocoa: { name: '無糖ココアパウダー', note: '' },
+              t_sabayon: { title: '卵黄と砂糖を白っぽくもったりするまで泡立てる', tags: ['泡立てる', '5 MIN'] },
+              t_cream_fold: { title: '冷えたマスカルポーネと七分立ての生クリームをさっくり合わせる', tags: ['さっくり混ぜる'] },
+              t_dip: { title: 'ビスケットをエスプレッソに片面1秒ずつ素早く浸す', tags: ['乳化'] },
+              t_assemble: { title: 'ビスケットとクリームを2層に重ね、冷蔵庫で冷やしてココアを振る', tags: ['冷やす', '4H 冷蔵', '盛り付け'] }
+            }
+          },
+          pt: {
+            title: 'Tiramisu Clássico Italiano',
+            preStartSteps: [
+              'Preparar café expresso forte e deixar arrefecer completamente',
+              'Preparar uma travessa de 22×22 cm e manter o mascarpone frio'
+            ],
+            nodes: {
+              t_yolks: { name: 'Gemas pasteurizadas', note: '' },
+              t_sugar: { name: 'Açúcar Fino', note: '' },
+              t_masc: { name: 'Queijo Mascarpone', note: 'frio' },
+              t_cream: { name: 'Natas para Bater', note: 'frias' },
+              t_espresso: { name: 'Café Expresso Frio', note: 'sem açúcar' },
+              t_savoiardi: { name: 'Palitos La Reine (Savoiardi)', note: '' },
+              t_cocoa: { name: 'Cacau Puro em Pó', note: '' },
+              t_sabayon: { title: 'Bater as gemas com o açúcar até obter um creme pálido e fofo', tags: ['BATER', '5 MIN'] },
+              t_cream_fold: { title: 'Envolver o mascarpone frio e depois as natas batidas', tags: ['ENVOLVER'] },
+              t_dip: { title: 'Mergulhar rapidamente os palitos no café (1 seg de cada lado)', tags: ['EMULSIONAR'] },
+              t_assemble: { title: 'Alternar duas camadas de palitos e creme; refrigerar e polvilhar cacau', tags: ['ARREFECER', '4H FRIO', 'EMPRATAR'] }
+            }
+          }
+        },
+        nodes: [
+          { id: 't_yolks', type: 'ingredient', x: 40, y: 50, qty: 5, unit: 'pcs' },
+          { id: 't_sugar', type: 'ingredient', x: 40, y: 175, qty: 100, unit: 'g' },
+          { id: 't_masc', type: 'ingredient', x: 40, y: 300, qty: 500, unit: 'g' },
+          { id: 't_cream', type: 'ingredient', x: 40, y: 425, qty: 200, unit: 'ml' },
+          { id: 't_espresso', type: 'ingredient', x: 40, y: 560, qty: 300, unit: 'ml' },
+          { id: 't_savoiardi', type: 'ingredient', x: 40, y: 685, qty: 24, unit: 'pcs' },
+          { id: 't_cocoa', type: 'ingredient', x: 40, y: 810, qty: 20, unit: 'g' },
+          { id: 't_sabayon', type: 'lavoration', x: 350, y: 110 },
+          { id: 't_cream_fold', type: 'lavoration', x: 660, y: 230 },
+          { id: 't_dip', type: 'lavoration', x: 350, y: 620 },
+          { id: 't_assemble', type: 'output', x: 1000, y: 440 }
+        ],
+        edges: [
+          { id: 'te1', from: 't_yolks', to: 't_sabayon' },
+          { id: 'te2', from: 't_sugar', to: 't_sabayon' },
+          { id: 'te3', from: 't_sabayon', to: 't_cream_fold' },
+          { id: 'te4', from: 't_masc', to: 't_cream_fold' },
+          { id: 'te5', from: 't_cream', to: 't_cream_fold' },
+          { id: 'te6', from: 't_espresso', to: 't_dip' },
+          { id: 'te7', from: 't_savoiardi', to: 't_dip' },
+          { id: 'te8', from: 't_cream_fold', to: 't_assemble' },
+          { id: 'te9', from: 't_dip', to: 't_assemble' },
+          { id: 'te10', from: 't_cocoa', to: 't_assemble' }
+        ]
+      }
+    };
+
+    // =========================================================================
+    // APPLICATION STATE
+    // =========================================================================
+    let state = {
+      lang: 'en',
+      activeTab: 'graph',
+      currentPresetKey: 'carbonara',
+      isCustomModified: false,
+      title: 'Classic Spaghetti Carbonara',
+      baseServings: 4,
+      yieldMultiplier: 1,
+      preStartSteps: [],
+      nodes: [],
+      edges: [],
+      selectedNodeId: null,
+      selectedEdgeId: null,
+      zoom: 1,
+      fitToPage: true,
+      completedCells: new Set()
+    };
+
+    let dragState = {
+      mode: null, // 'node' | 'wire'
+      nodeId: null,
+      offsetX: 0,
+      offsetY: 0,
+      fromNodeId: null
+    };
+
+    function t(key) {
+      const dict = I18N[state.lang] || I18N.en;
+      return dict[key] !== undefined ? dict[key] : I18N.en[key];
+    }
+
+    // =========================================================================
+    // ROBUST BOOTSTRAP (WORKS ONLINE AND VIA FILE:// WHEN DOWNLOADED)
+    // =========================================================================
+    let hasBooted = false;
+
+    function boot() {
+      if (hasBooted) return;
+      hasBooted = true;
+
+      const titleInput = document.getElementById('grid-recipe-title-input');
+      if (titleInput) {
+        titleInput.addEventListener('input', (e) => {
+          state.title = e.target.value;
+          state.isCustomModified = true;
+          renderGridRecipe();
+        });
+      }
+
+      const servingsInput = document.getElementById('grid-servings-input');
+      if (servingsInput) {
+        servingsInput.addEventListener('input', (e) => {
+          const val = parseInt(e.target.value, 10);
+          state.baseServings = Number.isFinite(val) && val > 0 ? val : 1;
+          renderGridRecipe();
+        });
+      }
+
+      window.addEventListener('click', (e) => {
+        const wrapper = document.getElementById('lang-dropdown-wrapper');
+        if (wrapper && !wrapper.contains(e.target)) {
+          const menu = document.getElementById('lang-dropdown-menu');
+          if (menu) menu.classList.add('hidden');
+        }
+      });
+
+      window.addEventListener('mousemove', handleGlobalMouseMove);
+      window.addEventListener('mouseup', handleGlobalMouseUp);
+      window.addEventListener('resize', () => {
+        renderEdges();
+        if (state.activeTab === 'grid' && state.fitToPage) applyFitScale();
+      });
+
+      // Check if an embedded recipe state was saved inside this downloaded .html file
+      let loadedEmbedded = false;
+      try {
+        const embeddedEl = document.getElementById('embedded-recipe-state');
+        if (embeddedEl && embeddedEl.textContent.trim() && embeddedEl.textContent.trim() !== 'null') {
+          const saved = JSON.parse(embeddedEl.textContent);
+          if (saved && Array.isArray(saved.nodes) && Array.isArray(saved.edges)) {
+            state.lang = saved.lang && I18N[saved.lang] ? saved.lang : 'en';
+            state.currentPresetKey = saved.currentPresetKey || null;
+            state.isCustomModified = Boolean(saved.isCustomModified);
+            state.title = saved.title || 'Saved Recipe';
+            state.baseServings = Number(saved.baseServings) > 0 ? Number(saved.baseServings) : 4;
+            state.yieldMultiplier = Number(saved.yieldMultiplier) > 0 ? Number(saved.yieldMultiplier) : 1;
+            state.preStartSteps = Array.isArray(saved.preStartSteps) ? saved.preStartSteps : [];
+            state.nodes = saved.nodes;
+            state.edges = saved.edges;
+            state.selectedNodeId = state.nodes[0] ? state.nodes[0].id : null;
+            loadedEmbedded = true;
+          }
+        }
+      } catch (err) {
+        loadedEmbedded = false;
+      }
+
+      applyLanguageUi();
+
+      if (loadedEmbedded) {
+        document.documentElement.lang = state.lang;
+        document.getElementById('grid-recipe-title-input').value = state.title;
+        document.getElementById('grid-servings-input').value = state.baseServings;
+        renderPreStartList();
+        renderGraph();
+        renderInspector();
+      } else {
+        loadPreset('carbonara', true);
+      }
+
+      // Guarantee edge coordinates settle after local file layout paint
+      requestAnimationFrame(() => {
+        renderEdges();
+        setTimeout(renderEdges, 80);
+      });
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', boot);
+    } else {
+      boot();
+    }
+    window.addEventListener('load', () => {
+      renderEdges();
+      if (state.activeTab === 'grid' && state.fitToPage) applyFitScale();
+    });
+
+    // =========================================================================
+    // 7-LANGUAGE SWITCHING
+    // =========================================================================
+    function toggleLangMenu(e) {
+      e.stopPropagation();
+      const menu = document.getElementById('lang-dropdown-menu');
+      if (menu) menu.classList.toggle('hidden');
+    }
+
+    function setLanguage(langCode) {
+      if (!I18N[langCode]) return;
+      state.lang = langCode;
+      document.documentElement.lang = langCode;
+      document.getElementById('lang-dropdown-menu').classList.add('hidden');
+
+      applyLanguageUi();
+
+      if (state.currentPresetKey && !state.isCustomModified && PRESETS[state.currentPresetKey]) {
+        applyPresetLanguageContent(state.currentPresetKey);
+      }
+
+      renderPreStartList();
+      renderGraph();
+      renderInspector();
+      if (state.activeTab === 'grid') renderGridRecipe();
+    }
+
+    function applyLanguageUi() {
+      const dict = I18N[state.lang] || I18N.en;
+      document.getElementById('current-lang-flag').textContent = dict.flag;
+      document.getElementById('current-lang-code').textContent = dict.code;
+
+      document.getElementById('ui-app-title').textContent = dict.appTitle;
+      document.getElementById('ui-app-subtitle').textContent = dict.appSubtitle;
+      document.getElementById('nav-tab-graph').textContent = dict.tabGraph;
+      document.getElementById('nav-tab-grid').textContent = dict.tabGrid;
+      document.getElementById('btn-new-recipe').textContent = dict.newBtn;
+      document.getElementById('ui-download-app').textContent = dict.downloadApp;
+
+      const presetSel = document.getElementById('preset-selector');
+      Array.from(presetSel.options).forEach((opt) => {
+        if (dict.presetNames[opt.value]) {
+          opt.textContent = dict.presetNames[opt.value];
+        }
+      });
+
+      document.getElementById('ui-prestart-title').textContent = dict.preStartTitle;
+      document.getElementById('ui-prestart-sub').textContent = dict.preStartSub;
+      document.getElementById('prestart-input').placeholder = dict.preStartPlaceholder;
+      document.getElementById('ui-prestart-add-btn').textContent = dict.addBtn;
+      document.getElementById('prestart-empty-box').textContent = dict.preStartEmpty;
+
+      document.getElementById('ui-add-ing').textContent = dict.addIng;
+      document.getElementById('ui-add-lav').textContent = dict.addLav;
+      document.getElementById('ui-add-out').textContent = dict.addOut;
+      document.getElementById('ui-auto-layout').textContent = dict.autoLayout;
+      document.getElementById('ui-export-json').textContent = dict.exportJson;
+      document.getElementById('ui-import-json').textContent = dict.importJson;
+      document.getElementById('ui-inspector-title').textContent = dict.inspectorTitle;
+
+      document.getElementById('ui-base-servings-label').textContent = dict.yieldLabel;
+      document.getElementById('opt-landscape').textContent = dict.landscape;
+      document.getElementById('opt-portrait').textContent = dict.portrait;
+      document.getElementById('fit-btn-page').textContent = dict.fitPage;
+      document.getElementById('ui-preview-bw').textContent = dict.previewBw;
+      document.getElementById('ui-export-html').textContent = dict.exportHtml;
+      document.getElementById('ui-print-recipe').textContent = dict.printRecipe;
+      document.getElementById('ui-grid-hint').textContent = dict.gridHint;
+      document.getElementById('dag-split-badge').textContent = dict.sharedSplitHint;
+    }
+
+    function applyPresetLanguageContent(presetKey) {
+      const preset = PRESETS[presetKey];
+      if (!preset) return;
+      const loc = preset.l10n[state.lang] || preset.l10n.en;
+
+      state.title = loc.title;
+      state.preStartSteps = [...loc.preStartSteps];
+      document.getElementById('grid-recipe-title-input').value = state.title;
+
+      state.nodes.forEach((node) => {
+        const locNode = loc.nodes[node.id];
+        if (!locNode) return;
+        if (node.type === 'ingredient') {
+          node.name = locNode.name;
+          node.note = locNode.note || '';
+        } else {
+          node.title = locNode.title;
+          node.tags = locNode.tags ? [...locNode.tags] : [];
+        }
+      });
+    }
+
+    // =========================================================================
+    // TOAST NOTIFICATION HELPER
+    // =========================================================================
+    function showToast(message, tone = 'info') {
+      const stack = document.getElementById('toast-stack');
+      if (!stack) return;
+      const el = document.createElement('div');
+      el.className = 'toast-item';
+      el.style.borderLeftColor =
+        tone === 'error' ? '#DC2626' :
+        tone === 'success' ? '#2563EB' : '#FACC15';
+      el.textContent = message;
+      stack.appendChild(el);
+
+      setTimeout(() => {
+        el.style.opacity = '0';
+        setTimeout(() => el.remove(), 220);
+      }, 2600);
+    }
+
+    // =========================================================================
+    // TAB SWITCHING
+    // =========================================================================
+    function switchTab(tab) {
+      state.activeTab = tab;
+      const graphView = document.getElementById('view-flow-graph');
+      const gridView = document.getElementById('view-grid-recipe');
+      const btnGraph = document.getElementById('nav-tab-graph');
+      const btnGrid = document.getElementById('nav-tab-grid');
+
+      if (tab === 'graph') {
+        graphView.classList.remove('hidden');
+        gridView.classList.add('hidden');
+        btnGraph.classList.add('active');
+        btnGrid.classList.remove('active');
+        renderGraph();
+      } else {
+        graphView.classList.add('hidden');
+        gridView.classList.remove('hidden');
+        btnGrid.classList.add('active');
+        btnGraph.classList.remove('active');
+        renderGridRecipe();
+      }
+    }
+
+    // =========================================================================
+    // PRESETS & CLEAR RECIPE
+    // =========================================================================
+    function loadPreset(presetKey, silent = false) {
+      const preset = PRESETS[presetKey];
+      if (!preset) return;
+      const loc = preset.l10n[state.lang] || preset.l10n.en;
+
+      state.currentPresetKey = presetKey;
+      state.isCustomModified = false;
+      state.title = loc.title;
+      state.baseServings = preset.baseServings;
+      state.yieldMultiplier = 1;
+      state.preStartSteps = [...loc.preStartSteps];
+      state.nodes = preset.nodes.map((n) => {
+        const locNode = loc.nodes[n.id] || {};
+        return {
+          ...n,
+          name: locNode.name || '',
+          note: locNode.note || '',
+          title: locNode.title || '',
+          tags: locNode.tags ? [...locNode.tags] : []
+        };
+      });
+      state.edges = preset.edges.map((e) => ({ ...e }));
+      state.selectedNodeId = state.nodes[0] ? state.nodes[0].id : null;
+      state.selectedEdgeId = null;
+      state.completedCells.clear();
+
+      document.getElementById('grid-recipe-title-input').value = state.title;
+      document.getElementById('grid-servings-input').value = state.baseServings;
+
+      renderPreStartList();
+      renderGraph();
+      renderInspector();
+      if (state.activeTab === 'grid') renderGridRecipe();
+      if (!silent) showToast(loc.title, 'success');
+    }
+
+    function clearRecipe() {
+      state.currentPresetKey = null;
+      state.isCustomModified = true;
+      state.title = 'Untitled Recipe';
+      state.baseServings = 4;
+      state.yieldMultiplier = 1;
+      state.preStartSteps = [];
+      state.nodes = [
+        { id: 'ing_1', type: 'ingredient', x: 60, y: 120, name: t('typeIngredient'), qty: 250, unit: 'g', note: '' },
+        { id: 'lav_1', type: 'lavoration', x: 380, y: 120, title: t('typeLavoration'), tags: [t('quickTechTags')[0], '5 MIN'] },
+        { id: 'out_1', type: 'output', x: 710, y: 120, title: t('typeOutput'), tags: [t('quickTechTags')[9]] }
+      ];
+      state.edges = [
+        { id: 'e_init_1', from: 'ing_1', to: 'lav_1' },
+        { id: 'e_init_2', from: 'lav_1', to: 'out_1' }
+      ];
+      state.selectedNodeId = 'ing_1';
+      state.selectedEdgeId = null;
+      state.completedCells.clear();
+
+      document.getElementById('grid-recipe-title-input').value = state.title;
+      document.getElementById('grid-servings-input').value = state.baseServings;
+
+      renderPreStartList();
+      renderGraph();
+      renderInspector();
+      if (state.activeTab === 'grid') renderGridRecipe();
+    }
+
+    // =========================================================================
+    // BEFORE YOU START (MISE EN PLACE) EDITOR
+    // =========================================================================
+    function handleAddPreStart(e) {
+      e.preventDefault();
+      const input = document.getElementById('prestart-input');
+      const text = input.value.trim();
+      if (!text) return;
+
+      state.isCustomModified = true;
+      state.preStartSteps.push(text);
+      input.value = '';
+      renderPreStartList();
+      if (state.activeTab === 'grid') renderGridRecipe();
+    }
+
+    function updatePreStartItem(idx, value) {
+      state.isCustomModified = true;
+      state.preStartSteps[idx] = value;
+      if (state.activeTab === 'grid') renderGridRecipe();
+    }
+
+    function movePreStartItem(idx, direction) {
+      const target = idx + direction;
+      if (target < 0 || target >= state.preStartSteps.length) return;
+      state.isCustomModified = true;
+      const temp = state.preStartSteps[idx];
+      state.preStartSteps[idx] = state.preStartSteps[target];
+      state.preStartSteps[target] = temp;
+      renderPreStartList();
+      if (state.activeTab === 'grid') renderGridRecipe();
+    }
+
+    function deletePreStartItem(idx) {
+      state.isCustomModified = true;
+      state.preStartSteps.splice(idx, 1);
+      renderPreStartList();
+      if (state.activeTab === 'grid') renderGridRecipe();
+    }
+
+    function renderPreStartList() {
+      const list = document.getElementById('prestart-editor-list');
+      const emptyBox = document.getElementById('prestart-empty-box');
+      const countPill = document.getElementById('prestart-count-pill');
+
+      countPill.textContent = String(state.preStartSteps.length);
+      list.innerHTML = '';
+
+      if (state.preStartSteps.length === 0) {
+        emptyBox.classList.remove('hidden');
+        return;
+      }
+      emptyBox.classList.add('hidden');
+
+      state.preStartSteps.forEach((step, idx) => {
+        const li = document.createElement('li');
+        li.className = 'prestart-item';
+        li.innerHTML = `
+          <span class="prestart-num tabular-nums">${idx + 1}</span>
+          <textarea
+            rows="2"
+            aria-label="Pre-step ${idx + 1}"
+            oninput="updatePreStartItem(${idx}, this.value)"
+          >${escapeHtml(step)}</textarea>
+          <div class="mini-stack">
+            <button type="button" onclick="movePreStartItem(${idx}, -1)" class="mini-icon-btn">↑</button>
+            <button type="button" onclick="movePreStartItem(${idx}, 1)" class="mini-icon-btn">↓</button>
+            <button type="button" onclick="deletePreStartItem(${idx})" class="mini-icon-btn danger">✕</button>
+          </div>
+        `;
+        list.appendChild(li);
+      });
+    }
+
+    // =========================================================================
+    // ROUNDED PILL TAG CLASSIFICATION (TECHNIQUE BLUE vs OVEN/TIME RED)
+    // =========================================================================
+    function isTimeOrOvenTag(tag) {
+      const upper = String(tag || '').toUpperCase().trim();
+      return /(°C|°F|\bMIN\b|\bSEC\b|\bHR\b|\bCHILL\b|\bHEAT\b|\bOVEN\b|\bFROID\b|\bFRIGO\b|\bKÜHLEN\b|\bFRÍO\b|\bFRIO\b|\bFEU\b|\bFUOCO\b|\bHITZE\b|\bFUEGO\b|\bLUME\b|冷蔵|火|\d+\s*(M|H|S)\b)/i.test(upper);
+    }
+
+    function renderPillTagHtml(tag) {
+      const cls = isTimeOrOvenTag(tag) ? 'pill-tag pill-tag-param' : 'pill-tag pill-tag-tech';
+      return `<span class="${cls}">${escapeHtml(tag)}</span>`;
+    }
+
+    // =========================================================================
+    // NODE & DAG EDGE OPERATIONS (STRICT CYCLE PREVENTION)
+    // =========================================================================
+    function generateId(prefix) {
+      return `${prefix}_${Math.random().toString(36).slice(2, 8)}`;
+    }
+
+    function addNode(type, customPos = null) {
+      state.isCustomModified = true;
+      const viewport = document.getElementById('graph-viewport');
+      const baseX = customPos ? customPos.x : Math.round(((viewport ? viewport.scrollLeft : 0) + 140) / state.zoom);
+      const baseY = customPos ? customPos.y : Math.round(((viewport ? viewport.scrollTop : 0) + 110 + (state.nodes.length % 5) * 42) / state.zoom);
+
+      const newNode = {
+        id: generateId(type === 'ingredient' ? 'ing' : type === 'lavoration' ? 'lav' : 'out'),
+        type,
+        x: Math.max(24, baseX),
+        y: Math.max(64, baseY)
+      };
+
+      if (type === 'ingredient') {
+        newNode.name = t('typeIngredient');
+        newNode.qty = 100;
+        newNode.unit = 'g';
+        newNode.note = '';
+      } else if (type === 'lavoration') {
+        newNode.title = t('typeLavoration');
+        newNode.tags = [t('quickTechTags')[0]];
+      } else {
+        newNode.title = t('typeOutput');
+        newNode.tags = [t('quickTechTags')[9]];
+      }
+
+      state.nodes.push(newNode);
+      state.selectedNodeId = newNode.id;
+      state.selectedEdgeId = null;
+
+      renderGraph();
+      renderInspector();
+      return newNode;
+    }
+
+    function spawnNextStep(sourceNodeId) {
+      const src = state.nodes.find((n) => n.id === sourceNodeId);
+      if (!src) return;
+
+      const nextNode = addNode('lavoration', { x: src.x + 310, y: src.y });
+      tryConnectNodes(src.id, nextNode.id);
+    }
+
+    function deleteNode(nodeId) {
+      state.isCustomModified = true;
+      state.nodes = state.nodes.filter((n) => n.id !== nodeId);
+      state.edges = state.edges.filter((e) => e.from !== nodeId && e.to !== nodeId);
+      if (state.selectedNodeId === nodeId) {
+        state.selectedNodeId = state.nodes[0] ? state.nodes[0].id : null;
+      }
+      renderGraph();
+      renderInspector();
+    }
+
+    function deleteEdge(edgeId) {
+      state.isCustomModified = true;
+      state.edges = state.edges.filter((e) => e.id !== edgeId);
+      if (state.selectedEdgeId === edgeId) {
+        state.selectedEdgeId = null;
+      }
+      renderGraph();
+      renderInspector();
+    }
+
+    function wouldCreateCycle(fromId, toId) {
+      if (fromId === toId) return true;
+      const visited = new Set();
+      const stack = [toId];
+      while (stack.length > 0) {
+        const curr = stack.pop();
+        if (curr === fromId) return true;
+        if (visited.has(curr)) continue;
+        visited.add(curr);
+        state.edges.forEach((edge) => {
+          if (edge.from === curr) stack.push(edge.to);
+        });
+      }
+      return false;
+    }
+
+    function tryConnectNodes(fromId, toId) {
+      const fromNode = state.nodes.find((n) => n.id === fromId);
+      const toNode = state.nodes.find((n) => n.id === toId);
+      if (!fromNode || !toNode) return;
+
+      if (fromNode.type === 'output') {
+        showToast(t('toastOutSrc'), 'error');
+        return;
+      }
+      if (toNode.type === 'ingredient') {
+        showToast(t('toastIngDst'), 'error');
+        return;
+      }
+      if (state.edges.some((e) => e.from === fromId && e.to === toId)) {
+        return;
+      }
+      if (wouldCreateCycle(fromId, toId)) {
+        showToast(t('toastCycle'), 'error');
+        return;
+      }
+
+      state.isCustomModified = true;
+      state.edges.push({ id: generateId('edge'), from: fromId, to: toId });
+      state.selectedEdgeId = null;
+      renderGraph();
+      renderInspector();
+    }
+
+    function autoAlignLeftToRight() {
+      if (state.nodes.length === 0) return;
+
+      const depthMap = new Map();
+      state.nodes.forEach((n) => depthMap.set(n.id, 0));
+
+      for (let i = 0; i < state.nodes.length; i++) {
+        state.edges.forEach((e) => {
+          const dFrom = depthMap.get(e.from) || 0;
+          const dTo = depthMap.get(e.to) || 0;
+          if (dFrom + 1 > dTo) {
+            depthMap.set(e.to, dFrom + 1);
+          }
+        });
+      }
+
+      const columns = new Map();
+      state.nodes.forEach((n) => {
+        const col = n.type === 'ingredient' ? 0 : Math.max(1, depthMap.get(n.id) || 1);
+        if (!columns.has(col)) columns.set(col, []);
+        columns.get(col).push(n);
+      });
+
+      const sortedCols = Array.from(columns.keys()).sort((a, b) => a - b);
+      sortedCols.forEach((colIdx, visualCol) => {
+        const colNodes = columns.get(colIdx);
+        colNodes.sort((a, b) => a.y - b.y);
+        colNodes.forEach((node, rowIdx) => {
+          node.x = 45 + visualCol * 315;
+          node.y = 75 + rowIdx * 138;
+        });
+      });
+
+      renderGraph();
+      showToast(t('toastAligned'), 'success');
+    }
+
+    function changeZoom(delta) {
+      state.zoom = Math.min(1.5, Math.max(0.6, +(state.zoom + delta).toFixed(2)));
+      const stage = document.getElementById('graph-stage');
+      stage.style.transform = `scale(${state.zoom})`;
+      document.getElementById('zoom-readout').textContent = `${Math.round(state.zoom * 100)}%`;
+      renderEdges();
+    }
+
+    // =========================================================================
+    // RENDER FLOW GRAPH (NODES + SVG BEZIER WIRES)
+    // =========================================================================
+    function renderGraph() {
+      const nodesLayer = document.getElementById('nodes-layer');
+      if (!nodesLayer) return;
+      nodesLayer.innerHTML = '';
+
+      state.nodes.forEach((node) => {
+        const isSelected = node.id === state.selectedNodeId;
+        const card = document.createElement('div');
+
+        const stripeClass =
+          node.type === 'ingredient' ? 'accent-yellow' :
+          node.type === 'lavoration' ? 'accent-blue' : 'accent-red';
+
+        card.id = `node-el-${node.id}`;
+        card.className = `flow-node${isSelected ? ' selected' : ''}`;
+        card.style.left = `${node.x}px`;
+        card.style.top = `${node.y}px`;
+
+        let bodyHtml = '';
+        if (node.type === 'ingredient') {
+          const scaledQty = formatQuantity((Number(node.qty) || 0) * state.yieldMultiplier);
+          bodyHtml = `
+            <div class="node-body">
+              <div class="node-meta-row">
+                <span class="node-kind-label">${escapeHtml(t('typeIngredient'))}</span>
+                <span class="node-qty-pill tabular-nums">${scaledQty} ${escapeHtml(node.unit || '')}</span>
+              </div>
+              <div class="node-title-text">${escapeHtml(node.name || '')}</div>
+              ${node.note ? `<div class="node-note-text">${escapeHtml(node.note)}</div>` : ''}
+            </div>
+          `;
+        } else {
+          const roleLabel = node.type === 'lavoration' ? t('typeLavoration') : t('typeOutput');
+          const tagsHtml = (node.tags || []).map((tag) => renderPillTagHtml(tag)).join('');
+          bodyHtml = `
+            <div class="node-body">
+              <div class="node-meta-row">
+                <span class="node-kind-label">${escapeHtml(roleLabel)}</span>
+                ${node.type === 'lavoration' ? `
+                  <button type="button" onclick="event.stopPropagation(); spawnNextStep('${node.id}')" class="node-next-btn">
+                    ${escapeHtml(t('nextBtn'))}
+                  </button>
+                ` : ''}
+              </div>
+              <div class="node-title-text">${escapeHtml(node.title || roleLabel)}</div>
+              ${tagsHtml ? `<div class="node-tags-wrap">${tagsHtml}</div>` : ''}
+            </div>
+          `;
+        }
+
+        const hasInputPort = node.type !== 'ingredient';
+        const hasOutputPort = node.type !== 'output';
+
+        card.innerHTML = `
+          <div class="top-accent-bar ${stripeClass}"></div>
+          ${bodyHtml}
+          ${hasInputPort ? `<div data-port-type="in" data-node-id="${node.id}" class="port-handle port-in"></div>` : ''}
+          ${hasOutputPort ? `<div data-port-type="out" data-node-id="${node.id}" class="port-handle port-out"></div>` : ''}
+        `;
+
+        card.addEventListener('mousedown', (e) => handleNodeMouseDown(e, node.id));
+        nodesLayer.appendChild(card);
+      });
+
+      renderEdges();
+      requestAnimationFrame(renderEdges);
+    }
+
+    function getPortCoordinates(nodeId, portSide) {
+      const node = state.nodes.find((n) => n.id === nodeId);
+      const el = document.getElementById(`node-el-${nodeId}`);
+      if (!node) return { x: 0, y: 0 };
+
+      const width = el && el.offsetWidth > 0 ? el.offsetWidth : 244;
+      const height = el && el.offsetHeight > 0 ? el.offsetHeight : 78;
+
+      return {
+        x: portSide === 'out' ? node.x + width : node.x,
+        y: node.y + height / 2
+      };
+    }
+
+    function renderEdges() {
+      const edgesGroup = document.getElementById('edges-group');
+      if (!edgesGroup) return;
+      edgesGroup.innerHTML = '';
+
+      state.edges.forEach((edge) => {
+        const p1 = getPortCoordinates(edge.from, 'out');
+        const p2 = getPortCoordinates(edge.to, 'in');
+        const dx = Math.max(55, Math.abs(p2.x - p1.x) * 0.45);
+        const d = `M ${p1.x} ${p1.y} C ${p1.x + dx} ${p1.y}, ${p2.x - dx} ${p2.y}, ${p2.x} ${p2.y}`;
+
+        const isSelected = edge.id === state.selectedEdgeId;
+        const strokeColor = isSelected ? '#DC2626' : '#2563EB';
+        const marker = isSelected ? 'url(#arrow-red)' : 'url(#arrow-blue)';
+
+        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        path.setAttribute('d', d);
+        path.setAttribute('fill', 'none');
+        path.setAttribute('stroke', strokeColor);
+        path.setAttribute('stroke-width', isSelected ? '2.6' : '2');
+        path.setAttribute('marker-end', marker);
+
+        const hitPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        hitPath.setAttribute('d', d);
+        hitPath.setAttribute('fill', 'none');
+        hitPath.setAttribute('stroke', 'transparent');
+        hitPath.setAttribute('stroke-width', '14');
+        hitPath.style.cursor = 'pointer';
+        hitPath.style.pointerEvents = 'stroke';
+        hitPath.addEventListener('click', (e) => {
+          e.stopPropagation();
+          state.selectedEdgeId = edge.id;
+          state.selectedNodeId = null;
+          renderGraph();
+          renderInspector();
+        });
+
+        edgesGroup.appendChild(path);
+        edgesGroup.appendChild(hitPath);
+      });
+    }
+
+    // =========================================================================
+    // NODE DRAGGING & WIRE CONNECTION HANDLERS
+    // =========================================================================
+    function handleNodeMouseDown(e, nodeId) {
+      const portEl = e.target.closest('[data-port-type]');
+      if (portEl) {
+        e.stopPropagation();
+        const portType = portEl.getAttribute('data-port-type');
+        if (portType === 'out') {
+          dragState = { mode: 'wire', fromNodeId: nodeId };
+          document.getElementById('temp-wire-path').classList.remove('hidden');
+        }
+        return;
+      }
+
+      if (e.target.closest('button')) return;
+
+      e.stopPropagation();
+      const node = state.nodes.find((n) => n.id === nodeId);
+      if (!node) return;
+
+      state.selectedNodeId = nodeId;
+      state.selectedEdgeId = null;
+      renderGraph();
+      renderInspector();
+
+      const stageRect = document.getElementById('graph-stage').getBoundingClientRect();
+      dragState = {
+        mode: 'node',
+        nodeId,
+        offsetX: (e.clientX - stageRect.left) / state.zoom - node.x,
+        offsetY: (e.clientY - stageRect.top) / state.zoom - node.y
+      };
+    }
+
+    function handleGlobalMouseMove(e) {
+      if (!dragState.mode) return;
+      const stageRect = document.getElementById('graph-stage').getBoundingClientRect();
+
+      if (dragState.mode === 'node') {
+        const node = state.nodes.find((n) => n.id === dragState.nodeId);
+        if (!node) return;
+        node.x = Math.max(16, Math.round((e.clientX - stageRect.left) / state.zoom - dragState.offsetX));
+        node.y = Math.max(56, Math.round((e.clientY - stageRect.top) / state.zoom - dragState.offsetY));
+
+        const el = document.getElementById(`node-el-${node.id}`);
+        if (el) {
+          el.style.left = `${node.x}px`;
+          el.style.top = `${node.y}px`;
+        }
+        renderEdges();
+      } else if (dragState.mode === 'wire') {
+        const p1 = getPortCoordinates(dragState.fromNodeId, 'out');
+        const p2 = {
+          x: (e.clientX - stageRect.left) / state.zoom,
+          y: (e.clientY - stageRect.top) / state.zoom
+        };
+        const dx = Math.max(45, Math.abs(p2.x - p1.x) * 0.45);
+        const tempWire = document.getElementById('temp-wire-path');
+        tempWire.setAttribute('d', `M ${p1.x} ${p1.y} C ${p1.x + dx} ${p1.y}, ${p2.x - dx} ${p2.y}, ${p2.x} ${p2.y}`);
+      }
+    }
+
+    function handleGlobalMouseUp(e) {
+      if (!dragState.mode) return;
+
+      if (dragState.mode === 'wire') {
+        document.getElementById('temp-wire-path').classList.add('hidden');
+        const targetPort = e.target.closest('[data-port-type="in"]');
+        const targetCard = e.target.closest('[id^="node-el-"]');
+
+        let targetNodeId = null;
+        if (targetPort) {
+          targetNodeId = targetPort.getAttribute('data-node-id');
+        } else if (targetCard) {
+          targetNodeId = targetCard.id.replace('node-el-', '');
+        }
+
+        if (targetNodeId && targetNodeId !== dragState.fromNodeId) {
+          tryConnectNodes(dragState.fromNodeId, targetNodeId);
+        }
+      }
+
+      dragState = { mode: null, nodeId: null, offsetX: 0, offsetY: 0, fromNodeId: null };
+    }
+
+    // =========================================================================
+    // RIGHT INSPECTOR PANEL (LOCALIZED TAG-ONLY EDITOR)
+    // =========================================================================
+    function renderInspector() {
+      const container = document.getElementById('inspector-body');
+      const badge = document.getElementById('inspector-type-pill');
+      if (!container || !badge) return;
+
+      if (state.selectedEdgeId) {
+        const edge = state.edges.find((e) => e.id === state.selectedEdgeId);
+        if (edge) {
+          const src = state.nodes.find((n) => n.id === edge.from);
+          const dst = state.nodes.find((n) => n.id === edge.to);
+          badge.textContent = t('typeConnection');
+          badge.className = 'pill-tag pill-tag-tech';
+
+          container.innerHTML = `
+            <div class="field-group" style="background: #FAFAFA; border: 1px solid #18181B; padding: 10px;">
+              <div class="field-label">${escapeHtml(t('fromLabel'))}</div>
+              <div style="font-size: 12px; font-weight: 700; margin-bottom: 8px;">${escapeHtml(src ? (src.name || src.title) : edge.from)}</div>
+              <div class="field-label">${escapeHtml(t('toLabel'))}</div>
+              <div style="font-size: 12px; font-weight: 700;">${escapeHtml(dst ? (dst.name || dst.title) : edge.to)}</div>
+            </div>
+            <button type="button" onclick="deleteEdge('${edge.id}')" class="swiss-btn swiss-btn-red" style="width: 100%; padding: 8px;">
+              ${escapeHtml(t('deleteEdge'))}
+            </button>
+          `;
+          return;
+        }
+      }
+
+      const node = state.nodes.find((n) => n.id === state.selectedNodeId);
+      if (!node) {
+        badge.textContent = t('typeNone');
+        badge.className = 'pill-tag';
+        badge.style.background = '#FFFFFF';
+        container.innerHTML = `<div class="empty-dashed-box">${escapeHtml(t('inspectorNone'))}</div>`;
+        return;
+      }
+
+      if (node.type === 'ingredient') {
+        badge.textContent = t('typeIngredient');
+        badge.className = 'pill-tag';
+        badge.style.background = '#FEF08A';
+        badge.style.color = '#18181B';
+        badge.style.borderColor = '#18181B';
+
+        const unitOptionsHtml = UNIT_OPTIONS.map(
+          (u) => `<option value="${u}" ${node.unit === u ? 'selected' : ''}>${u}</option>`
+        ).join('');
+
+        container.innerHTML = `
+          <div>
+            <div class="field-group">
+              <label class="field-label">${escapeHtml(t('fieldIngName'))}</label>
+              <input type="text" value="${escapeHtml(node.name || '')}" oninput="updateNodeField('${node.id}', 'name', this.value)" class="swiss-input" style="width: 100%; font-weight: 600;" />
+            </div>
+
+            <div class="field-group two-col-grid">
+              <div>
+                <label class="field-label">${escapeHtml(t('fieldQty'))}</label>
+                <input type="number" step="any" min="0" value="${node.qty ?? 0}" oninput="updateNodeField('${node.id}', 'qty', parseFloat(this.value) || 0)" class="swiss-input tabular-nums" style="width: 100%; font-weight: 700;" />
+              </div>
+              <div>
+                <label class="field-label">${escapeHtml(t('fieldUnit'))}</label>
+                <select onchange="updateNodeField('${node.id}', 'unit', this.value)" class="swiss-select" style="width: 100%;">
+                  ${unitOptionsHtml}
+                </select>
+              </div>
+            </div>
+
+            <div class="field-group">
+              <label class="field-label">${escapeHtml(t('fieldNote'))}</label>
+              <input type="text" placeholder="${escapeHtml(t('fieldNotePh'))}" value="${escapeHtml(node.note || '')}" oninput="updateNodeField('${node.id}', 'note', this.value)" class="swiss-input" style="width: 100%;" />
+            </div>
+
+            <div style="padding-top: 8px; border-top: 1px solid #E4E4E7;">
+              <button type="button" onclick="deleteNode('${node.id}')" class="swiss-btn swiss-btn-red" style="width: 100%; padding: 8px;">
+                ${escapeHtml(t('deleteNode'))}
+              </button>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      const isLav = node.type === 'lavoration';
+      badge.textContent = isLav ? t('typeLavoration') : t('typeOutput');
+      badge.className = isLav ? 'pill-tag pill-tag-tech' : 'pill-tag pill-tag-param';
+      badge.style.background = '';
+      badge.style.color = '';
+      badge.style.borderColor = '';
+
+      const currentTags = node.tags || [];
+      const activeTagsHtml = currentTags.length
+        ? currentTags
+            .map((tag, idx) => {
+              const cls = isTimeOrOvenTag(tag) ? 'pill-tag pill-tag-param' : 'pill-tag pill-tag-tech';
+              return `
+                <button type="button" onclick="removeTagFromNode('${node.id}', ${idx})" class="${cls}" style="cursor: pointer;">
+                  <span>${escapeHtml(tag)}</span>
+                  <span style="font-weight: 800;">×</span>
+                </button>
+              `;
+            })
+            .join('')
+        : `<span style="font-size: 11px; color: #A1A1AA;">${escapeHtml(t('fieldNoTags'))}</span>`;
+
+      const quickTechHtml = t('quickTechTags').map((tag) => {
+        const active = currentTags.includes(tag);
+        return `
+          <button type="button" onclick="toggleNodeTag('${node.id}', '${escapeHtml(tag)}')" class="pill-tag ${active ? 'pill-tag-active-blue' : 'pill-tag-tech'}" style="cursor: pointer;">
+            ${escapeHtml(tag)}
+          </button>
+        `;
+      }).join('');
+
+      const quickParamHtml = t('quickParamTags').map((tag) => {
+        const active = currentTags.includes(tag);
+        return `
+          <button type="button" onclick="toggleNodeTag('${node.id}', '${escapeHtml(tag)}')" class="pill-tag ${active ? 'pill-tag-active-red' : 'pill-tag-param'}" style="cursor: pointer;">
+            ${escapeHtml(tag)}
+          </button>
+        `;
+      }).join('');
+
+      container.innerHTML = `
+        <div>
+          <div class="field-group">
+            <label class="field-label">${escapeHtml(isLav ? t('fieldLavAction') : t('fieldOutAction'))}</label>
+            <textarea rows="3" oninput="updateNodeField('${node.id}', 'title', this.value)" class="swiss-textarea" style="width: 100%; font-weight: 600; line-height: 1.35;">${escapeHtml(node.title || '')}</textarea>
+          </div>
+
+          <div class="field-group">
+            <label class="field-label">${escapeHtml(t('fieldActiveTags'))}</label>
+            <div class="tag-box-well">${activeTagsHtml}</div>
+          </div>
+
+          <form onsubmit="handleAddCustomTag(event, '${node.id}')" class="field-group inline-form">
+            <input id="custom-tag-input" type="text" placeholder="${escapeHtml(t('fieldCustomTagPh'))}" class="swiss-input" />
+            <button type="submit" class="swiss-btn">${escapeHtml(t('addBtn'))}</button>
+          </form>
+
+          <div class="field-group">
+            <div class="field-label" style="color: #1E3A8A;">${escapeHtml(t('fieldQuickTech'))}</div>
+            <div class="tag-cloud">${quickTechHtml}</div>
+          </div>
+
+          <div class="field-group">
+            <div class="field-label" style="color: #7F1D1D;">${escapeHtml(t('fieldQuickParam'))}</div>
+            <div class="tag-cloud">${quickParamHtml}</div>
+          </div>
+
+          <div style="padding-top: 8px; border-top: 1px solid #E4E4E7;">
+            <button type="button" onclick="deleteNode('${node.id}')" class="swiss-btn swiss-btn-red" style="width: 100%; padding: 8px;">
+              ${escapeHtml(t('deleteNode'))}
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    function updateNodeField(nodeId, field, value) {
+      const node = state.nodes.find((n) => n.id === nodeId);
+      if (!node) return;
+      state.isCustomModified = true;
+      node[field] = value;
+      renderGraph();
+    }
+
+    function toggleNodeTag(nodeId, tag) {
+      const node = state.nodes.find((n) => n.id === nodeId);
+      if (!node) return;
+      state.isCustomModified = true;
+      if (!Array.isArray(node.tags)) node.tags = [];
+
+      const idx = node.tags.indexOf(tag);
+      if (idx >= 0) {
+        node.tags.splice(idx, 1);
+      } else {
+        node.tags.push(tag);
+      }
+      renderGraph();
+      renderInspector();
+    }
+
+    function removeTagFromNode(nodeId, tagIndex) {
+      const node = state.nodes.find((n) => n.id === nodeId);
+      if (!node || !Array.isArray(node.tags)) return;
+      state.isCustomModified = true;
+      node.tags.splice(tagIndex, 1);
+      renderGraph();
+      renderInspector();
+    }
+
+    function handleAddCustomTag(e, nodeId) {
+      e.preventDefault();
+      const input = document.getElementById('custom-tag-input');
+      const raw = input.value.trim().toUpperCase();
+      if (!raw) return;
+
+      const node = state.nodes.find((n) => n.id === nodeId);
+      if (!node) return;
+      state.isCustomModified = true;
+      if (!Array.isArray(node.tags)) node.tags = [];
+
+      if (!node.tags.includes(raw)) {
+        node.tags.push(raw);
+      }
+      input.value = '';
+      renderGraph();
+      renderInspector();
+    }
+
+    // =========================================================================
+    // AUTHENTIC GRIDRECIPE LEFT-TO-RIGHT MERGED-CELL MATRIX COMPILER
+    // =========================================================================
+    function compileGridMatrix() {
+      const nodesById = new Map(state.nodes.map((n) => [n.id, n]));
+      const incoming = new Map();
+      const outgoing = new Map();
+
+      state.nodes.forEach((n) => {
+        incoming.set(n.id, []);
+        outgoing.set(n.id, []);
+      });
+
+      state.edges.forEach((e) => {
+        if (nodesById.has(e.from) && nodesById.has(e.to)) {
+          incoming.get(e.to).push(e.from);
+          outgoing.get(e.from).push(e.to);
+        }
+      });
+
+      let hadSharedSplits = false;
+      const treeNodes = new Map();
+      const treeChildren = new Map();
+      const treeParent = new Map();
+
+      function cloneSubtree(origId, parentTreeId = null) {
+        const orig = nodesById.get(origId);
+        const tId = `${origId}__${treeNodes.size}`;
+        treeNodes.set(tId, { ...orig, treeId: tId, origId });
+        treeChildren.set(tId, []);
+        treeParent.set(tId, parentTreeId);
+
+        const preds = incoming.get(origId) || [];
+        preds.sort((a, b) => (nodesById.get(a)?.y || 0) - (nodesById.get(b)?.y || 0));
+
+        preds.forEach((predId) => {
+          const childTreeId = cloneSubtree(predId, tId);
+          treeChildren.get(tId).push(childTreeId);
+        });
+
+        return tId;
+      }
+
+      const sinks = state.nodes
+        .filter((n) => (outgoing.get(n.id) || []).length === 0)
+        .sort((a, b) => a.y - b.y);
+
+      state.nodes.forEach((n) => {
+        if ((outgoing.get(n.id) || []).length > 1) hadSharedSplits = true;
+      });
+
+      const rootTreeIds = sinks.map((s) => cloneSubtree(s.id, null));
+
+      const colDepth = new Map();
+      function computeDepth(tId) {
+        const kids = treeChildren.get(tId) || [];
+        if (kids.length === 0) {
+          colDepth.set(tId, 0);
+          return 0;
+        }
+        const maxChildDepth = Math.max(...kids.map(computeDepth));
+        const d = maxChildDepth + 1;
+        colDepth.set(tId, d);
+        return d;
+      }
+      rootTreeIds.forEach(computeDepth);
+
+      const maxCol = Math.max(1, ...Array.from(colDepth.values()));
+      treeNodes.forEach((tNode, tId) => {
+        if (tNode.type === 'output') {
+          colDepth.set(tId, maxCol);
+        }
+      });
+
+      const leafRows = [];
+      const rowSpanRange = new Map();
+
+      function assignPlanarRows(tId) {
+        const kids = treeChildren.get(tId) || [];
+        if (kids.length === 0) {
+          const rIdx = leafRows.length;
+          leafRows.push(tId);
+          rowSpanRange.set(tId, { startRow: rIdx, endRow: rIdx });
+          return { startRow: rIdx, endRow: rIdx };
+        }
+        let minR = Infinity;
+        let maxR = -Infinity;
+        kids.forEach((kId) => {
+          const range = assignPlanarRows(kId);
+          minR = Math.min(minR, range.startRow);
+          maxR = Math.max(maxR, range.endRow);
+        });
+        rowSpanRange.set(tId, { startRow: minR, endRow: maxR });
+        return { startRow: minR, endRow: maxR };
+      }
+
+      rootTreeIds.forEach(assignPlanarRows);
+
+      const numRows = leafRows.length;
+      const numCols = maxCol + 1;
+      const grid = Array.from({ length: numRows }, () => Array(numCols).fill(null));
+
+      treeNodes.forEach((tNode, tId) => {
+        const c = colDepth.get(tId);
+        const range = rowSpanRange.get(tId);
+        const rowspan = range.endRow - range.startRow + 1;
+
+        grid[range.startRow][c] = {
+          kind: 'node',
+          node: tNode,
+          rowspan,
+          colspan: 1
+        };
+
+        for (let r = range.startRow + 1; r <= range.endRow; r++) {
+          grid[r][c] = { kind: 'covered' };
+        }
+      });
+
+      treeNodes.forEach((tNode, tId) => {
+        const pId = treeParent.get(tId);
+        if (!pId) return;
+
+        const cStart = colDepth.get(tId) + 1;
+        const cEnd = colDepth.get(pId) - 1;
+        if (cStart > cEnd) return;
+
+        const range = rowSpanRange.get(tId);
+        const rowspan = range.endRow - range.startRow + 1;
+        const spanLen = cEnd - cStart + 1;
+
+        grid[range.startRow][cStart] = {
+          kind: 'passthrough',
+          sourceOrigId: tNode.origId,
+          rowspan,
+          colspan: spanLen
+        };
+
+        for (let r = range.startRow; r <= range.endRow; r++) {
+          for (let c = cStart; c <= cEnd; c++) {
+            if (r === range.startRow && c === cStart) continue;
+            grid[r][c] = { kind: 'covered' };
+          }
+        }
+      });
+
+      for (let r = 0; r < numRows; r++) {
+        for (let c = 0; c < numCols; c++) {
+          if (!grid[r][c]) {
+            grid[r][c] = { kind: 'empty', rowspan: 1, colspan: 1 };
+          }
+        }
+      }
+
+      const lineageMap = new Map();
+      state.nodes.forEach((n) => {
+        const related = new Set([n.id]);
+        const upQueue = [...(incoming.get(n.id) || [])];
+        while (upQueue.length) {
+          const id = upQueue.shift();
+          if (!related.has(id)) {
+            related.add(id);
+            upQueue.push(...(incoming.get(id) || []));
+          }
+        }
+        const downQueue = [...(outgoing.get(n.id) || [])];
+        while (downQueue.length) {
+          const id = downQueue.shift();
+          if (!related.has(id)) {
+            related.add(id);
+            downQueue.push(...(outgoing.get(id) || []));
+          }
+        }
+        lineageMap.set(n.id, related);
+      });
+
+      return { grid, numRows, numCols, hadSharedSplits, lineageMap };
+    }
+
+    // =========================================================================
+    // RENDER TAB 2: SWISS PRINTABLE GRIDRECIPE SHEET
+    // =========================================================================
+    function renderGridRecipe() {
+      const titleEl = document.getElementById('sheet-recipe-title');
+      const yieldBadge = document.getElementById('sheet-yield-badge');
+      const scaledServings = formatQuantity(state.baseServings * state.yieldMultiplier);
+
+      titleEl.textContent = state.title.trim() || 'Untitled Recipe';
+      yieldBadge.textContent = `${scaledServings} ${t('servingsUnit')}`;
+
+      const preStrip = document.getElementById('sheet-prestart-strip');
+      const validPreSteps = state.preStartSteps.map((s) => s.trim()).filter(Boolean);
+
+      if (validPreSteps.length === 0) {
+        preStrip.classList.add('hidden');
+      } else {
+        preStrip.classList.remove('hidden');
+        preStrip.innerHTML = validPreSteps
+          .map(
+            (step, i) => `
+              <span class="prestart-pill">
+                <strong class="tabular-nums" style="font-weight: 800; font-size: 10px;">${i + 1}.</strong>
+                <span>${escapeHtml(step)}</span>
+              </span>
+            `
+          )
+          .join('');
+      }
+
+      const scrollWrapper = document.getElementById('grid-table-scroll');
+      const splitBadge = document.getElementById('dag-split-badge');
+
+      if (state.nodes.length === 0) {
+        scrollWrapper.innerHTML = `<div style="padding: 32px; text-align: center; font-size: 12px; color: #71717A;">${escapeHtml(t('inspectorNone'))}</div>`;
+        return;
+      }
+
+      const { grid, numRows, numCols, hadSharedSplits, lineageMap } = compileGridMatrix();
+      window.__currentLineageMap = lineageMap;
+
+      if (hadSharedSplits) {
+        splitBadge.classList.remove('hidden');
+      } else {
+        splitBadge.classList.add('hidden');
+      }
+
+      let theadHtml = '<thead><tr>';
+      for (let c = 0; c < numCols; c++) {
+        const colTitle =
+          c === 0 ? t('colIngredients') :
+          c === numCols - 1 ? t('colFinish') : `${t('colStage')} ${c}`;
+        theadHtml += `<th>${escapeHtml(colTitle)}</th>`;
+      }
+      theadHtml += '</tr></thead>';
+
+      let tbodyHtml = '<tbody>';
+      for (let r = 0; r < numRows; r++) {
+        tbodyHtml += '<tr>';
+        for (let c = 0; c < numCols; c++) {
+          const cell = grid[r][c];
+          if (!cell || cell.kind === 'covered') continue;
+
+          const rsAttr = cell.rowspan > 1 ? ` rowspan="${cell.rowspan}"` : '';
+          const csAttr = cell.colspan > 1 ? ` colspan="${cell.colspan}"` : '';
+
+          if (cell.kind === 'passthrough') {
+            tbodyHtml += `
+              <td${rsAttr}${csAttr} class="cell-passthrough" data-orig-id="${cell.sourceOrigId}">
+                <div class="passthrough-track"></div>
+              </td>
+            `;
+            continue;
+          }
+
+          if (cell.kind === 'empty') {
+            tbodyHtml += `<td${rsAttr}${csAttr} style="background: #FFFFFF;"></td>`;
+            continue;
+          }
+
+          const node = cell.node;
+          const isDone = state.completedCells.has(node.origId);
+          const doneCls = isDone ? ' cell-done' : '';
+
+          if (node.type === 'ingredient') {
+            const qtyStr = formatQuantity((Number(node.qty) || 0) * state.yieldMultiplier);
+            tbodyHtml += `
+              <td${rsAttr}${csAttr}
+                data-orig-id="${node.origId}"
+                onmouseenter="highlightLineage('${node.origId}')"
+                onmouseleave="clearLineageHighlight()"
+                onclick="toggleCellCompleted('${node.origId}')"
+                class="cell-ingredient${doneCls}"
+              >
+                <div class="ing-cell-top">
+                  <span class="cell-main-label">${escapeHtml(node.name || '')}</span>
+                  <span class="ing-qty-label tabular-nums">${qtyStr} ${escapeHtml(node.unit || '')}</span>
+                </div>
+                ${node.note ? `<div class="ing-note-sub">${escapeHtml(node.note)}</div>` : ''}
+              </td>
+            `;
+          } else {
+            const cellClass = node.type === 'output' ? 'cell-output' : 'cell-lavoration';
+            const tagsHtml = (node.tags || []).map((tag) => renderPillTagHtml(tag)).join('');
+            tbodyHtml += `
+              <td${rsAttr}${csAttr}
+                data-orig-id="${node.origId}"
+                onmouseenter="highlightLineage('${node.origId}')"
+                onmouseleave="clearLineageHighlight()"
+                onclick="toggleCellCompleted('${node.origId}')"
+                class="${cellClass}${doneCls}"
+              >
+                <div class="cell-main-label">${escapeHtml(node.title || '')}</div>
+                ${tagsHtml ? `<div class="cell-tags-row">${tagsHtml}</div>` : ''}
+              </td>
+            `;
+          }
+        }
+        tbodyHtml += '</tr>';
+      }
+      tbodyHtml += '</tbody>';
+
+      scrollWrapper.innerHTML = `<table class="gridrecipe-table">${theadHtml}${tbodyHtml}</table>`;
+
+      if (state.fitToPage) {
+        requestAnimationFrame(applyFitScale);
+      } else {
+        resetSheetScale();
+      }
+    }
+
+    // =========================================================================
+    // INTERACTIVE CELL LINEAGE & CHECK-OFF
+    // =========================================================================
+    function highlightLineage(origId) {
+      const map = window.__currentLineageMap;
+      if (!map || !map.has(origId)) return;
+      const related = map.get(origId);
+
+      document.querySelectorAll('#grid-table-scroll td[data-orig-id]').forEach((td) => {
+        const id = td.getAttribute('data-orig-id');
+        if (related.has(id)) {
+          td.classList.add('lineage-active');
+          td.classList.remove('lineage-dimmed');
+        } else {
+          td.classList.add('lineage-dimmed');
+          td.classList.remove('lineage-active');
+        }
+      });
+    }
+
+    function clearLineageHighlight() {
+      document.querySelectorAll('#grid-table-scroll td[data-orig-id]').forEach((td) => {
+        td.classList.remove('lineage-active', 'lineage-dimmed');
+      });
+    }
+
+    function toggleCellCompleted(origId) {
+      if (state.completedCells.has(origId)) {
+        state.completedCells.delete(origId);
+      } else {
+        state.completedCells.add(origId);
+      }
+      renderGridRecipe();
+    }
+
+    // =========================================================================
+    // YIELD SCALING, PRINT LAYOUT, B&W PREVIEW & DOWNLOADS
+    // =========================================================================
+    function setYieldMultiplier(mult) {
+      state.yieldMultiplier = mult;
+      [0.5, 1, 2].forEach((m) => {
+        const btn = document.getElementById(`mult-btn-${m}`);
+        if (!btn) return;
+        if (m === mult) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+      });
+      renderGraph();
+      if (state.activeTab === 'grid') renderGridRecipe();
+    }
+
+    function setFitMode(fit) {
+      state.fitToPage = fit;
+      const btnPage = document.getElementById('fit-btn-page');
+      const btn100 = document.getElementById('fit-btn-100');
+
+      if (fit) {
+        btnPage.classList.add('active');
+        btn100.classList.remove('active');
+        applyFitScale();
+      } else {
+        btnPage.classList.remove('active');
+        btn100.classList.add('active');
+        resetSheetScale();
+      }
+    }
+
+    function applyFitScale() {
+      const sheet = document.getElementById('printable-sheet');
+      const table = sheet ? sheet.querySelector('table') : null;
+      if (!sheet || !table) return;
+
+      resetSheetScale();
+      const availableWidth = sheet.clientWidth;
+      const naturalTableWidth = table.scrollWidth;
+
+      if (naturalTableWidth > availableWidth && availableWidth > 0) {
+        const scale = Math.max(0.55, availableWidth / naturalTableWidth);
+        table.style.transform = `scale(${scale})`;
+        table.style.transformOrigin = 'top left';
+        sheet.style.overflow = 'hidden';
+      }
+    }
+
+    function resetSheetScale() {
+      const sheet = document.getElementById('printable-sheet');
+      if (!sheet) return;
+      const table = sheet.querySelector('table');
+      sheet.style.overflow = '';
+      if (table) {
+        table.style.transform = '';
+        table.style.transformOrigin = '';
+      }
+    }
+
+    function updatePrintLayout() {
+      const size = document.getElementById('print-paper-size').value;
+      const orient = document.getElementById('print-orientation').value;
+      const styleEl = document.getElementById('dynamic-print-page-style');
+      styleEl.textContent = `@page { size: ${size} ${orient}; margin: 10mm; }`;
+    }
+
+    function toggleBwPreview(enabled) {
+      const sheet = document.getElementById('printable-sheet');
+      if (enabled) {
+        sheet.classList.add('bw-preview');
+      } else {
+        sheet.classList.remove('bw-preview');
+      }
+    }
+
+    function triggerPrint() {
+      clearLineageHighlight();
+      updatePrintLayout();
+      resetSheetScale();
+      window.print();
+      if (state.fitToPage) {
+        setTimeout(applyFitScale, 200);
+      }
+    }
+
+    // Downloads the entire self-contained interactive app with the user's current recipe embedded
+    function downloadSelfContainedApp() {
+      clearLineageHighlight();
+      const snapshot = {
+        lang: state.lang,
+        currentPresetKey: state.currentPresetKey,
+        isCustomModified: state.isCustomModified,
+        title: state.title,
+        baseServings: state.baseServings,
+        yieldMultiplier: state.yieldMultiplier,
+        preStartSteps: state.preStartSteps,
+        nodes: state.nodes,
+        edges: state.edges
+      };
+
+      const cloneDoc = document.documentElement.cloneNode(true);
+
+      // Clear dynamically rendered DOM containers inside clone so boot() populates cleanly
+      const cloneNodes = cloneDoc.querySelector('#nodes-layer');
+      if (cloneNodes) cloneNodes.innerHTML = '';
+      const cloneEdges = cloneDoc.querySelector('#edges-group');
+      if (cloneEdges) cloneEdges.innerHTML = '';
+      const clonePre = cloneDoc.querySelector('#prestart-editor-list');
+      if (clonePre) clonePre.innerHTML = '';
+      const cloneGrid = cloneDoc.querySelector('#grid-table-scroll');
+      if (cloneGrid) cloneGrid.innerHTML = '';
+      const cloneToast = cloneDoc.querySelector('#toast-stack');
+      if (cloneToast) cloneToast.innerHTML = '';
+
+      const embeddedScript = cloneDoc.querySelector('#embedded-recipe-state');
+      if (embeddedScript) {
+        embeddedScript.textContent = JSON.stringify(snapshot);
+      }
+
+      const fullHtml = '<!DOCTYPE html>\n' + cloneDoc.outerHTML;
+      const safeFilename = (state.title || 'grid-recipe-app').toLowerCase().replace(/[^a-z0-9]+/g, '-') + '-app.html';
+
+      const blob = new Blob([fullHtml], { type: 'text/html;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = safeFilename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      showToast(t('toastSavedApp'), 'success');
+    }
+
+    // Downloads a clean print-only HTML sheet
+    function downloadPrintHtml() {
+      clearLineageHighlight();
+      const sheetHtml = document.getElementById('printable-sheet').outerHTML;
+      const size = document.getElementById('print-paper-size').value;
+      const orient = document.getElementById('print-orientation').value;
+      const safeFilename = (state.title || 'grid-recipe').toLowerCase().replace(/[^a-z0-9]+/g, '-') + '-print.html';
+
+      const standaloneDoc = `<!DOCTYPE html>
+<html lang="${state.lang}">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>${escapeHtml(state.title)} — Grid Recipe</title>
+  <style>
+    @page { size: ${size} ${orient}; margin: 10mm; }
+    * { box-sizing: border-box; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif; }
+    body { margin: 16px; background: #FFFFFF; color: #18181B; }
+    .swiss-sheet { border: 1.5px solid #18181B; background: #FFFFFF; }
+    .sheet-title-bar { padding: 10px 14px; border-bottom: 1px solid #18181B; display: flex; justify-content: space-between; align-items: baseline; }
+    .sheet-title-text { margin: 0; font-size: 20px; font-weight: 800; letter-spacing: -0.02em; }
+    .sheet-yield-pill { border: 1px solid #18181B; border-radius: 9999px; padding: 2px 10px; font-size: 11px; font-weight: 700; }
+    .prestart-strip { padding: 6px 14px; border-bottom: 1px solid #18181B; font-size: 11px; display: flex; flex-wrap: wrap; gap: 6px; }
+    .prestart-pill { display: inline-flex; align-items: center; gap: 5px; border: 1px solid #18181B; border-radius: 9999px; padding: 2px 10px; }
+    .hidden { display: none !important; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { border: 1px solid #18181B; padding: 6px 8px; vertical-align: middle; font-size: 12px; background: #FFFFFF !important; color: #18181B !important; }
+    th { font-size: 9.5px; text-transform: uppercase; letter-spacing: 0.08em; text-align: left; border-bottom: 1.5px solid #18181B; background: #F4F4F5 !important; }
+    .ing-cell-top { display: flex; justify-content: space-between; gap: 8px; }
+    .cell-main-label { font-weight: 700; }
+    .ing-qty-label { font-weight: 800; white-space: nowrap; }
+    .ing-note-sub { font-size: 10.5px; color: #52525B; margin-top: 2px; }
+    .cell-tags-row { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 5px; }
+    .pill-tag { display: inline-block; border: 1px solid #18181B; border-radius: 9999px; padding: 1.5px 7.5px; font-size: 9px; font-weight: 700; text-transform: uppercase; }
+    .passthrough-track { height: 1px; border-bottom: 1px dashed #71717A; }
+    @media print { body { margin: 0; } }
+  </style>
+</head>
+<body>
+  ${sheetHtml}
+  <script>window.onload = function() { window.print(); };<\/script>
+</body>
+</html>`;
+
+      const blob = new Blob([standaloneDoc], { type: 'text/html;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = safeFilename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    // =========================================================================
+    // JSON EXPORT / IMPORT MODAL
+    // =========================================================================
+    function openJsonModal(mode) {
+      const modal = document.getElementById('json-modal');
+      const heading = document.getElementById('json-modal-heading');
+      const textarea = document.getElementById('json-modal-textarea');
+      const applyBtn = document.getElementById('json-apply-btn');
+
+      modal.classList.remove('hidden');
+
+      if (mode === 'export') {
+        heading.textContent = t('exportJson');
+        applyBtn.classList.add('hidden');
+        const payload = {
+          title: state.title,
+          baseServings: state.baseServings,
+          preStartSteps: state.preStartSteps,
+          nodes: state.nodes,
+          edges: state.edges
+        };
+        textarea.value = JSON.stringify(payload, null, 2);
+      } else {
+        heading.textContent = t('importJson');
+        applyBtn.classList.remove('hidden');
+        textarea.value = '';
+        textarea.focus();
+      }
+    }
+
+    function closeJsonModal() {
+      document.getElementById('json-modal').classList.add('hidden');
+    }
+
+    function copyJsonText() {
+      const textarea = document.getElementById('json-modal-textarea');
+      textarea.select();
+      document.execCommand('copy');
+      showToast(t('toastCopied'), 'success');
+    }
+
+    function applyImportedJson() {
+      const raw = document.getElementById('json-modal-textarea').value.trim();
+      if (!raw) return;
+
+      try {
+        const parsed = JSON.parse(raw);
+        if (!Array.isArray(parsed.nodes) || !Array.isArray(parsed.edges)) {
+          throw new Error('JSON must contain "nodes" and "edges" arrays.');
+        }
+        state.currentPresetKey = null;
+        state.isCustomModified = true;
+        state.title = typeof parsed.title === 'string' ? parsed.title : 'Imported Recipe';
+        state.baseServings = Number(parsed.baseServings) > 0 ? Number(parsed.baseServings) : 4;
+        state.yieldMultiplier = 1;
+        state.preStartSteps = Array.isArray(parsed.preStartSteps) ? parsed.preStartSteps.map(String) : [];
+        state.nodes = parsed.nodes;
+        state.edges = parsed.edges;
+        state.selectedNodeId = state.nodes[0] ? state.nodes[0].id : null;
+        state.selectedEdgeId = null;
+        state.completedCells.clear();
+
+        document.getElementById('grid-recipe-title-input').value = state.title;
+        document.getElementById('grid-servings-input').value = state.baseServings;
+
+        renderPreStartList();
+        renderGraph();
+        renderInspector();
+        if (state.activeTab === 'grid') renderGridRecipe();
+        closeJsonModal();
+      } catch (err) {
+        showToast(err.message, 'error');
+      }
+    }
+
+    // =========================================================================
+    // FORMATTING & ESCAPING UTILITIES
+    // =========================================================================
+    function formatQuantity(num) {
+      if (!Number.isFinite(num)) return '0';
+      return String(Math.round(num * 100) / 100);
+    }
+
+    function escapeHtml(str) {
+      return String(str ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+  </script>
+</body>
+</html>

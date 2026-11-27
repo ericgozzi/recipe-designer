@@ -1,0 +1,575 @@
+/* ========================================================================== */
+/* Design tokens — white neumorphic "device" body, green + orange accents     */
+/* ========================================================================== */
+:root {
+  /* Body: white plastic. Soft shadows need a surface a touch below pure white. */
+  --body: #f1f1ee;
+  --body-hi: #fbfbf9;
+  --well: #e9e9e5;
+  --sh-light: rgba(255, 255, 255, 0.95);
+  --sh-dark: rgba(170, 170, 160, 0.5);
+  --sh-dark-strong: rgba(150, 150, 140, 0.55);
+
+  --raise: 7px 7px 16px var(--sh-dark), -7px -7px 16px var(--sh-light);
+  --raise-sm: 3px 3px 8px var(--sh-dark), -3px -3px 8px var(--sh-light);
+  --raise-xs: 2px 2px 4px var(--sh-dark), -2px -2px 4px var(--sh-light);
+  --inset: inset 4px 4px 10px var(--sh-dark), inset -4px -4px 10px var(--sh-light);
+  --inset-sm: inset 2px 2px 5px var(--sh-dark), inset -2px -2px 5px var(--sh-light);
+
+  --ink: #1b1b19;
+  --ink-2: #545450;
+  --ink-3: #8f8f88;
+  --hair: rgba(27, 27, 25, 0.09);
+
+  /* Accents */
+  --orange: #ff5b1f;
+  --orange-deep: #e5470e;
+  --orange-soft: #ffe3d6;
+  --orange-ink: #8f2c05;
+  --green: #1fae5b;
+  --green-deep: #168a47;
+  --green-soft: #d8f1e2;
+  --green-ink: #0d5a2d;
+  --saffron: #f0b31f;
+  --saffron-soft: #fbedc6;
+  --saffron-ink: #6e4b00;
+
+  /* Type colours: ingredient = saffron, step = green, final dish = orange */
+  --ing: var(--saffron);
+  --ing-soft: var(--saffron-soft);
+  --ing-ink: var(--saffron-ink);
+  --lav: var(--green);
+  --lav-soft: var(--green-soft);
+  --lav-ink: var(--green-ink);
+  --out: var(--orange);
+  --out-soft: var(--orange-soft);
+  --out-ink: var(--orange-ink);
+
+  --paper: #fbf7ef;
+  --ring: 0 0 0 2px var(--body), 0 0 0 4px var(--orange);
+
+  --r-sm: 9px;
+  --r: 14px;
+  --r-lg: 22px;
+
+  --font-ui: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  --font-display: 'Instrument Serif', 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: var(--body);
+  color: var(--ink);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  -webkit-font-smoothing: antialiased;
+}
+
+#app {
+  height: 100%;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* Tiny technical label, Teenage-Engineering style */
+.label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+/* LED indicator */
+.led {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  flex-shrink: 0;
+  background: var(--ink-3);
+}
+.led.ingredient { background: var(--ing); box-shadow: 0 0 0 2px rgba(240, 179, 31, 0.18), 0 0 8px rgba(240, 179, 31, 0.7); }
+.led.lavoration { background: var(--lav); box-shadow: 0 0 0 2px rgba(31, 174, 91, 0.16), 0 0 8px rgba(31, 174, 91, 0.65); }
+.led.output { background: var(--out); box-shadow: 0 0 0 2px rgba(255, 91, 31, 0.16), 0 0 8px rgba(255, 91, 31, 0.7); }
+.led.off { background: #cfcfc8; box-shadow: var(--inset-sm); }
+
+/* ========================================================================== */
+/* Buttons — raised keys that press in                                        */
+/* ========================================================================== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  height: 36px;
+  padding: 0 15px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  background: var(--body);
+  color: var(--ink);
+  border: none;
+  border-radius: 12px;
+  box-shadow: var(--raise-sm);
+  cursor: pointer;
+  transition: box-shadow 0.14s ease, transform 0.08s ease, background-color 0.14s ease, color 0.14s ease;
+}
+.btn:hover {
+  background: var(--body-hi);
+}
+.btn:active,
+.btn.pressed {
+  box-shadow: var(--inset-sm);
+  transform: translateY(1px);
+}
+.btn:focus-visible {
+  outline: none;
+  box-shadow: var(--raise-sm), var(--ring);
+}
+.btn svg {
+  flex-shrink: 0;
+}
+.btn:disabled {
+  opacity: 0.45;
+  cursor: default;
+  transform: none;
+}
+.btn-sm {
+  height: 30px;
+  padding: 0 11px;
+  border-radius: 10px;
+  font-size: 10.5px;
+}
+.btn-block {
+  width: 100%;
+}
+.btn-flat {
+  box-shadow: none;
+  background: transparent;
+}
+.btn-flat:hover {
+  background: rgba(27, 27, 25, 0.05);
+}
+.btn-primary {
+  background: var(--orange);
+  color: #fff;
+  box-shadow: 3px 3px 9px rgba(229, 71, 14, 0.35), -3px -3px 8px var(--sh-light);
+}
+.btn-primary:hover {
+  background: #ff6a33;
+}
+.btn-primary:active {
+  background: var(--orange-deep);
+  box-shadow: inset 2px 2px 6px rgba(120, 30, 0, 0.35);
+}
+.btn-danger {
+  color: var(--orange-ink);
+}
+.btn-danger:hover {
+  color: var(--orange-deep);
+}
+
+/* Round knob button */
+.knob {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  border-radius: 999px;
+  background: linear-gradient(145deg, #ffffff, #e6e6e1);
+  color: var(--ink-2);
+  box-shadow: var(--raise-sm);
+  cursor: pointer;
+  transition: box-shadow 0.12s ease, color 0.12s ease;
+}
+.knob:hover {
+  color: var(--ink);
+}
+.knob:active {
+  box-shadow: var(--inset-sm);
+  background: var(--body);
+}
+.knob:focus-visible {
+  outline: none;
+  box-shadow: var(--raise-sm), var(--ring);
+}
+.knob:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+.knob-sm {
+  width: 24px;
+  height: 24px;
+}
+
+/* Small flat icon button */
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--ink-3);
+  cursor: pointer;
+}
+.icon-btn:hover {
+  color: var(--ink);
+  box-shadow: var(--raise-xs);
+}
+.icon-btn:active {
+  box-shadow: var(--inset-sm);
+}
+.icon-btn.danger:hover {
+  color: var(--orange-deep);
+}
+.icon-btn:disabled {
+  opacity: 0.3;
+  cursor: default;
+  box-shadow: none;
+}
+
+/* ========================================================================== */
+/* Form controls — recessed into the body                                     */
+/* ========================================================================== */
+.input,
+.select,
+.textarea {
+  width: 100%;
+  font-size: 13px;
+  background: var(--body);
+  border: none;
+  border-radius: 11px;
+  padding: 8px 12px;
+  box-shadow: var(--inset-sm);
+  outline: none;
+  transition: box-shadow 0.14s ease;
+}
+.input::placeholder,
+.textarea::placeholder {
+  color: var(--ink-3);
+}
+.input,
+.select {
+  height: 38px;
+}
+.select {
+  cursor: pointer;
+  padding-right: 30px;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' stroke='%23545450' stroke-width='2' viewBox='0 0 24 24'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 11px center;
+}
+.textarea {
+  resize: vertical;
+  line-height: 1.45;
+}
+.input:focus,
+.select:focus,
+.textarea:focus {
+  box-shadow: var(--inset-sm), 0 0 0 2px var(--orange);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+/* Segmented control: recessed track, the active key pops out */
+.segmented {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 4px;
+  background: var(--body);
+  border-radius: 13px;
+  box-shadow: var(--inset-sm);
+}
+.segmented button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 28px;
+  padding: 0 12px;
+  border: none;
+  border-radius: 9px;
+  background: transparent;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 0.12s ease, box-shadow 0.14s ease, background-color 0.14s ease;
+}
+.segmented button:hover {
+  color: var(--ink);
+}
+.segmented button.active {
+  background: var(--body-hi);
+  color: var(--ink);
+  box-shadow: var(--raise-xs);
+}
+
+/* Toggle switch */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 22px;
+  border-radius: 999px;
+  background: var(--body);
+  box-shadow: var(--inset-sm);
+  flex-shrink: 0;
+  transition: background-color 0.15s ease;
+}
+.switch::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 16px;
+  height: 16px;
+  border-radius: 999px;
+  background: linear-gradient(145deg, #ffffff, #e4e4df);
+  box-shadow: 1px 1px 3px var(--sh-dark-strong);
+  transition: transform 0.16s ease;
+}
+input:checked + .switch {
+  background: var(--green);
+  box-shadow: inset 2px 2px 5px rgba(0, 70, 30, 0.35);
+}
+input:checked + .switch::after {
+  transform: translateX(18px);
+}
+input:focus-visible + .switch {
+  box-shadow: var(--inset-sm), var(--ring);
+}
+
+/* ========================================================================== */
+/* Pill tags                                                                  */
+/* ========================================================================== */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: none;
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  line-height: 1.5;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.pill-tech {
+  background: var(--green-soft);
+  color: var(--green-ink);
+}
+.pill-param {
+  background: var(--orange-soft);
+  color: var(--orange-ink);
+}
+button.pill {
+  cursor: pointer;
+}
+
+/* Tag keys: small raised keys that latch in with a lit LED when active */
+.tag-key {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 26px;
+  padding: 0 10px 0 8px;
+  border: none;
+  border-radius: 8px;
+  background: var(--body);
+  box-shadow: var(--raise-xs);
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+  cursor: pointer;
+  transition: box-shadow 0.12s ease, color 0.12s ease;
+}
+.tag-key::before {
+  content: '';
+  width: 5px;
+  height: 5px;
+  border-radius: 999px;
+  background: #cfcfc8;
+  transition: background-color 0.12s ease, box-shadow 0.12s ease;
+}
+.tag-key:hover {
+  color: var(--ink);
+}
+.tag-key.on {
+  box-shadow: var(--inset-sm);
+  color: var(--ink);
+}
+.tag-key.tech.on::before {
+  background: var(--green);
+  box-shadow: 0 0 6px var(--green);
+}
+.tag-key.param.on::before {
+  background: var(--orange);
+  box-shadow: 0 0 6px var(--orange);
+}
+
+/* ========================================================================== */
+/* Shared panel chrome                                                        */
+/* ========================================================================== */
+.slab {
+  background: var(--body);
+  border-radius: var(--r-lg);
+  box-shadow: var(--raise);
+}
+.panel-title {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+.panel-sub {
+  margin: 3px 0 0;
+  font-size: 12px;
+  color: var(--ink-3);
+}
+.lcd {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 34px;
+  height: 24px;
+  padding: 0 8px;
+  border-radius: 7px;
+  background: var(--well);
+  box-shadow: var(--inset-sm);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+.empty-box {
+  padding: 22px 16px;
+  text-align: center;
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--ink-3);
+  border-radius: var(--r);
+  box-shadow: var(--inset-sm);
+}
+
+/* ========================================================================== */
+/* Print: only the paper sheet                                                */
+/* ========================================================================== */
+@media print {
+  html,
+  body,
+  #app {
+    background: #fff !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+}
+
+/* ========================================================================== */
+/* Tooltips: data-tip="…" on any element (data-tip-pos="bottom" to flip)      */
+/* ========================================================================== */
+[data-tip] {
+  position: relative;
+}
+[data-tip]::after {
+  content: attr(data-tip);
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 8px);
+  z-index: 100;
+  padding: 5px 9px;
+  border-radius: 8px;
+  background: var(--ink);
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  line-height: 1.3;
+  text-transform: none;
+  white-space: nowrap;
+  box-shadow: 0 6px 14px -4px rgba(0, 0, 0, 0.35);
+  opacity: 0;
+  transform: translate(-50%, 4px);
+  pointer-events: none;
+  transition: opacity 0.12s ease, transform 0.12s ease;
+}
+[data-tip-pos='bottom']::after {
+  bottom: auto;
+  top: calc(100% + 8px);
+  transform: translate(-50%, -4px);
+}
+[data-tip]:hover::after,
+[data-tip]:focus-visible::after {
+  opacity: 1;
+  transform: translate(-50%, 0);
+  transition-delay: 0.15s;
+}
+@media print {
+  [data-tip]::after {
+    display: none;
+  }
+}
