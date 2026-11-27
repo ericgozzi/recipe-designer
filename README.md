@@ -17,7 +17,7 @@ Draw your recipe as a flow (ingredients → steps → dish), and get a beautiful
 ![Works offline](https://img.shields.io/badge/works-offline-success)
 ![License: MIT](https://img.shields.io/badge/license-MIT-blue)
 
-<!-- Add a screenshot or GIF here, e.g. docs/screenshot.png — it's the single best way to win a visitor over. -->
+<img src="docs/screenshot-grid.png" alt="A grid recipe card for Spaghetti Carbonara: ingredients on the left, cooking stages as columns, merged cells showing which ingredients combine in each step" width="900">
 
 </div>
 
@@ -44,6 +44,8 @@ together in which step.
 One look tells you what to prep, what runs in parallel, and where it all meets.
 
 ## ✨ Features
+
+<img src="docs/screenshot-flow.png" alt="The flow editor: ingredient nodes wired into cooking steps, with a 'before you start' list and an inspector panel" width="900">
 
 - 🔀 **Visual flow editor**: drag nodes, wire ingredients into steps and steps into the dish.
   Invalid wires (cycles, wires into an ingredient) are refused for you.
@@ -100,7 +102,6 @@ src/
   lib/grid.js             graph → merged-cell grid compiler, auto-layout
   components/             header, canvas, nodes, inspector, grid sheet, modals, toasts
   styles/base.css         design tokens and shared controls
-legacy/                   the original single-file version
 ```
 
 ## 🤝 Contributing
