@@ -48,7 +48,7 @@ function exportPdf() {
         <CategoryPicker v-model="category" />
 
         <div class="servings">
-          <label class="field" data-tip-pos="bottom" :data-tip="t('recipeForHint')">
+          <label class="serv-field" data-tip-pos="bottom" :data-tip="t('recipeForHint')">
             <span class="field-label">{{ t('recipeFor') }}</span>
             <input
               v-model.number="state.baseServings"
@@ -63,7 +63,7 @@ function exportPdf() {
 
           <span class="arrow" aria-hidden="true">→</span>
 
-          <div class="field" data-tip-pos="bottom" :data-tip="t('cookForHint')">
+          <div class="serv-field" data-tip-pos="bottom" :data-tip="t('cookForHint')">
             <Users :size="16" class="ctl-icon" />
             <span class="field-label">{{ t('cookFor') }}</span>
             <button type="button" class="knob knob-sm" :disabled="cookFor <= 1" aria-label="−" @click="stepCookFor(-1)">
@@ -169,7 +169,7 @@ function exportPdf() {
   align-items: center;
   gap: 8px 12px;
 }
-.field {
+.serv-field {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -208,7 +208,7 @@ function exportPdf() {
   color: var(--ink-3);
   flex-shrink: 0;
 }
-.field .ctl-icon {
+.serv-field .ctl-icon {
   margin-right: -2px;
 }
 .servings-input {
