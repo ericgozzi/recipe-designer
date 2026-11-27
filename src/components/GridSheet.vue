@@ -5,6 +5,7 @@ import { compileGridMatrix } from '../lib/grid.js';
 import { formatQuantity } from '../lib/format.js';
 import PillTag from './PillTag.vue';
 import { SYMBOLS } from '../data/symbols.js';
+import { categoryByKey } from '../data/categories.js';
 
 const stageEl = ref(null);
 const sheetEl = ref(null);
@@ -16,6 +17,7 @@ const yieldNum = computed(() => formatQuantity(servings() * state.yieldMultiplie
 function colTitle(c) {
   return c === 0 ? t('colIngredients') : `${t('colStage')} ${String(c).padStart(2, '0')}`;
 }
+const category = computed(() => categoryByKey(state.category));
 const activeSymbols = computed(() => SYMBOLS.filter((s) => state.symbols.includes(s.key)));
 const pad = (n) => String(n).padStart(2, '0');
 
@@ -106,7 +108,7 @@ function measureFit() {
 }
 
 watch(
-  () => [compiled.value, preSteps.value, state.title, state.symbols.length, yieldNum.value, state.paperSize, state.lang, state.activeTab, state.yieldMultiplier],
+  () => [compiled.value, preSteps.value, state.title, state.category, state.symbols.length, yieldNum.value, state.paperSize, state.lang, state.activeTab, state.yieldMultiplier],
   () => nextTick(measureFit),
   { flush: 'post' }
 );
@@ -140,6 +142,10 @@ onBeforeUnmount(() => {
     <div class="paper" :class="{ mono: state.monoInk }" :style="paperStyle">
       <article ref="sheetEl" class="sheet" @mouseleave="hovered = null">
         <header class="sheet-head">
+          <div class="head-col">
+          <div v-if="category" class="sheet-category">
+            <component :is="category.icon" :size="12" :stroke-width="2" />{{ t('categories')[category.key] }}
+          </div>
           <div class="head-main">
             <h2 class="sheet-title">{{ state.title.trim() || 'Untitled Recipe' }}</h2>
             <ul v-if="activeSymbols.length" class="sheet-symbols">
@@ -147,6 +153,7 @@ onBeforeUnmount(() => {
                 <component :is="s.icon" :size="14" :stroke-width="1.75" />
               </li>
             </ul>
+          </div>
           </div>
           <div class="yield">
             <span class="yield-num">{{ yieldNum }}</span>
@@ -214,15 +221,23 @@ onBeforeUnmount(() => {
   justify-content: center;
   min-width: 0;
 }
+/* "Graphite" palette: near-monochrome warm greys with a single orange accent
+   that marks the final dish and time/heat tags. Light on ink when printed. */
 .paper {
-  --sheet-ink: #22201c;
-  --sheet-rule: rgba(34, 32, 28, 0.22);
-  --tint-ing: rgba(240, 179, 31, 0.15);
-  --tint-ing-hover: rgba(240, 179, 31, 0.28);
-  --tint-lav: rgba(31, 174, 91, 0.09);
-  --tint-lav-hover: rgba(31, 174, 91, 0.2);
-  --tint-out: rgba(255, 91, 31, 0.1);
-  --tint-out-hover: rgba(255, 91, 31, 0.2);
+  --paper: #ffffff;
+  --sheet-ink: #1b1b19;
+  --sheet-rule: rgba(27, 27, 25, 0.22);
+  --tint-ing: #f2f2ef;
+  --tint-ing-hover: #e8e8e4;
+  --tint-lav: #ffffff;
+  --tint-lav-hover: #f5f5f2;
+  --tint-out: #fff0e8;
+  --tint-out-hover: #ffe3d4;
+  /* accents used by pills, numbers, category and symbols on the sheet */
+  --green-ink: #55554f;
+  --orange-ink: #e5470e;
+  --orange-deep: #ff5b1f;
+  --saffron-ink: #55554f;
   flex-shrink: 0;
   background: var(--paper);
   border-radius: 4px;
@@ -256,6 +271,23 @@ onBeforeUnmount(() => {
   gap: 24px;
   padding-bottom: 12px;
   border-bottom: 1.5px solid var(--sheet-ink);
+}
+.head-col {
+  min-width: 0;
+}
+.sheet-category {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 6px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--orange-deep);
+}
+.mono .sheet-category {
+  color: var(--sheet-ink);
 }
 .head-main {
   display: flex;

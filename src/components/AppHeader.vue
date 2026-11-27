@@ -5,6 +5,12 @@ import { state, t, loadPreset } from '../store.js';
 import { PRESETS } from '../data/presets.js';
 import LangMenu from './LangMenu.vue';
 import NewRecipeModal from './NewRecipeModal.vue';
+import { CATEGORIES, PRESET_CATEGORY } from '../data/categories.js';
+
+// Preset menu grouped by category, in category order.
+const presetGroups = computed(() =>
+  CATEGORIES.map((c) => ({ key: c.key, presets: presetKeys.filter((p) => PRESET_CATEGORY[p] === c.key) })).filter((g) => g.presets.length)
+);
 
 const showNew = ref(false);
 
@@ -46,7 +52,9 @@ function onPresetChange(e) {
     <div class="actions">
       <select class="select preset-select" :value="presetValue" aria-label="Recipe presets" @change="onPresetChange">
         <option v-if="!state.currentPresetKey" value="" disabled>{{ t('customRecipe') }}</option>
-        <option v-for="key in presetKeys" :key="key" :value="key">{{ t('presetNames')[key] }}</option>
+        <optgroup v-for="g in presetGroups" :key="g.key" :label="t('categories')[g.key]">
+          <option v-for="key in g.presets" :key="key" :value="key">{{ t('presetNames')[key] }}</option>
+        </optgroup>
       </select>
       <button type="button" class="knob new-btn" data-tip-pos="bottom" :data-tip="t('newBtn').replace(/^\+\s*/, '')" :aria-label="t('newBtn')" @click="showNew = true">
         <FilePlus :size="16" />

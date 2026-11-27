@@ -39,6 +39,7 @@ One-time setup: in the repository go to **Settings → Pages → Build and deplo
   Scale the yield (0.5× / 1× / 2×), choose A4 or A5 (always landscape) and export a PDF
   (the print dialog opens: choose "Save as PDF"). The recipe is always fitted to exactly one page,
   and the screen shows a true-to-size preview of that page. Optional black & white mode.
+- Each recipe has a category (starters, soups, salads, pasta & risotto, mains, sides, sauces, stocks, doughs, desserts, cakes, breakfast, drinks) and optional symbols (vegan, gluten-free, spicy, pork…), both shown on the printed card.
 - 7 languages (EN, FR, IT, DE, ES, JA, PT). Built-in presets re-translate until you edit them.
 - Work is autosaved in the browser (localStorage). Export downloads a `.json` file; import accepts a pasted or uploaded `.json`.
 

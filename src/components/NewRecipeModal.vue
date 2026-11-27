@@ -2,15 +2,17 @@
 import { onMounted, ref } from 'vue';
 import { FilePlus, X, TriangleAlert } from 'lucide-vue-next';
 import { state, t, clearRecipe } from '../store.js';
+import CategoryPicker from './CategoryPicker.vue';
 
 const emit = defineEmits(['close']);
 const title = ref('');
+const category = ref(null);
 const input = ref(null);
 
 onMounted(() => input.value?.focus());
 
 function create() {
-  clearRecipe(title.value);
+  clearRecipe(title.value, category.value);
   emit('close');
 }
 </script>
@@ -25,6 +27,8 @@ function create() {
         </header>
 
         <input ref="input" v-model="title" type="text" class="input title-input" :placeholder="t('titlePh')" :aria-label="t('titlePh')" />
+
+        <CategoryPicker v-model="category" />
 
         <p v-if="state.isCustomModified" class="warning"><TriangleAlert :size="14" />{{ t('confirmReplace') }}</p>
 

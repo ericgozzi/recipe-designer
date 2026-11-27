@@ -3,6 +3,7 @@ import { I18N } from './data/i18n.js';
 import { PRESETS } from './data/presets.js';
 import { computeAutoLayout } from './lib/grid.js';
 import { SYMBOL_KEYS, PRESET_SYMBOLS } from './data/symbols.js';
+import { CATEGORY_KEYS, PRESET_CATEGORY } from './data/categories.js';
 import { formatQuantity } from './lib/format.js';
 
 const STORAGE_KEY = 'grid-recipe-generator:v1';
@@ -36,6 +37,7 @@ export const state = reactive({
   monoInk: false, // black & white sheet (preview and PDF)
   completedCells: new Set(),
   symbols: [], // recipe symbols (vegan, spicy, pork…), see data/symbols.js
+  category: null, // one of data/categories.js, or null
 });
 
 export const toasts = reactive([]);
@@ -139,6 +141,7 @@ export function loadPreset(presetKey, { silent = false, force = false } = {}) {
   state.baseServings = preset.baseServings;
   state.preStartSteps = [...loc.preStartSteps];
   state.symbols = [...(PRESET_SYMBOLS[presetKey] || [])];
+  state.category = PRESET_CATEGORY[presetKey] || null;
   resetView(
     preset.nodes.map((n) => {
       const l = loc.nodes[n.id] || {};
@@ -151,7 +154,7 @@ export function loadPreset(presetKey, { silent = false, force = false } = {}) {
 }
 
 /** Starts a blank recipe. The New-recipe dialog asks for the title and confirms the replacement. */
-export function clearRecipe(title = '') {
+export function clearRecipe(title = '', category = null) {
   const tech = t('quickTechTags');
   state.currentPresetKey = null;
   state.isCustomModified = true;
@@ -159,6 +162,7 @@ export function clearRecipe(title = '') {
   state.baseServings = 4;
   state.preStartSteps = [];
   state.symbols = [];
+  state.category = CATEGORY_KEYS.includes(category) ? category : null;
   resetView(
     [
       { id: 'ing_1', type: 'ingredient', x: 60, y: 120, name: t('typeIngredient'), qty: 250, unit: 'g', note: '' },
@@ -355,6 +359,10 @@ export function addCustomTag(node, raw) {
   if (!node.tags.includes(tag)) node.tags.push(tag);
 }
 
+export function setCategory(key) {
+  state.category = CATEGORY_KEYS.includes(key) ? key : null;
+}
+
 // Symbols don't depend on the language, so toggling them doesn't stop preset re-translation.
 export function toggleSymbol(key) {
   if (!SYMBOL_KEYS.includes(key)) return;
@@ -376,6 +384,7 @@ export function exportPayload() {
     title: state.title,
     baseServings: servings(),
     preStartSteps: state.preStartSteps,
+    category: state.category,
     symbols: state.symbols,
     nodes: state.nodes,
     edges: state.edges,
@@ -443,6 +452,7 @@ function restore(saved) {
   state.title = typeof saved.title === 'string' ? saved.title : 'Saved Recipe';
   state.baseServings = Number(saved.baseServings) > 0 ? Number(saved.baseServings) : 4;
   state.preStartSteps = Array.isArray(saved.preStartSteps) ? saved.preStartSteps.map(String) : [];
+  state.category = CATEGORY_KEYS.includes(saved.category) ? saved.category : null;
   state.symbols = Array.isArray(saved.symbols) ? SYMBOL_KEYS.filter((k) => saved.symbols.includes(k)) : [];
   resetView(nodes, sanitizeEdges(saved.edges, nodes));
   if ([0.5, 1, 2].includes(saved.yieldMultiplier)) state.yieldMultiplier = saved.yieldMultiplier;

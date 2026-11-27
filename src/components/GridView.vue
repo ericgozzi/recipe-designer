@@ -1,10 +1,12 @@
 <script setup>
 import { computed } from 'vue';
 import { Minus, Plus, FileDown, Users, Contrast } from 'lucide-vue-next';
-import { state, t, setTitle, servings, PAPER } from '../store.js';
+import { state, t, setTitle, setCategory, servings, PAPER } from '../store.js';
 import GridSheet from './GridSheet.vue';
+import CategoryPicker from './CategoryPicker.vue';
 
 const title = computed({ get: () => state.title, set: setTitle });
+const category = computed({ get: () => state.category, set: setCategory });
 const yieldTitle = computed(() => t('yieldLabel').replace(/[:：\s]+$/, ''));
 
 function normalizeServings() {
@@ -33,6 +35,7 @@ function exportPdf() {
     <section class="controls slab no-print">
       <div class="group">
         <input v-model="title" type="text" class="input title-input" aria-label="Recipe title" />
+        <CategoryPicker v-model="category" />
 
         <div class="stepper" data-tip-pos="bottom" :data-tip="yieldTitle">
           <Users :size="16" class="ctl-icon" />
