@@ -3,6 +3,7 @@ import { I18N } from './data/i18n.js';
 import { PRESETS } from './data/presets.js';
 import { computeAutoLayout } from './lib/grid.js';
 import { SYMBOL_KEYS, PRESET_SYMBOLS } from './data/symbols.js';
+import { formatQuantity } from './lib/format.js';
 
 const STORAGE_KEY = 'grid-recipe-generator:v1';
 
@@ -53,6 +54,12 @@ export function t(key) {
 export function servings() {
   const n = Number(state.baseServings);
   return Number.isFinite(n) && n > 0 ? n : 1;
+}
+
+/** Ingredient amount as shown on the canvas and the sheet, scaled by the yield multiplier. */
+export function amountLabel(node) {
+  if (node.unit === 'qb') return t('unitQb');
+  return `${formatQuantity((Number(node.qty) || 0) * state.yieldMultiplier)} ${node.unit || ''}`.trim();
 }
 
 export function nodeLabel(node) {
@@ -143,12 +150,12 @@ export function loadPreset(presetKey, { silent = false, force = false } = {}) {
   return true;
 }
 
-export function clearRecipe() {
-  if (!confirmReplace()) return;
+/** Starts a blank recipe. The New-recipe dialog asks for the title and confirms the replacement. */
+export function clearRecipe(title = '') {
   const tech = t('quickTechTags');
   state.currentPresetKey = null;
   state.isCustomModified = true;
-  state.title = 'Untitled Recipe';
+  state.title = title.trim() || 'Untitled Recipe';
   state.baseServings = 4;
   state.preStartSteps = [];
   state.symbols = [];
@@ -394,6 +401,7 @@ function sanitizeNodes(rawNodes) {
       ...n,
       x: Number(n.x) || 40,
       y: Number(n.y) || 80,
+      ...(n.unit === 'to taste' ? { unit: 'qb' } : {}), // older files used a plain-English unit
       tags: Array.isArray(n.tags) ? n.tags.map(String) : n.type === 'ingredient' ? undefined : [],
     }));
 }

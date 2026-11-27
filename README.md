@@ -40,7 +40,7 @@ One-time setup: in the repository go to **Settings → Pages → Build and deplo
   (the print dialog opens: choose "Save as PDF"). The recipe is always fitted to exactly one page,
   and the screen shows a true-to-size preview of that page. Optional black & white mode.
 - 7 languages (EN, FR, IT, DE, ES, JA, PT). Built-in presets re-translate until you edit them.
-- Work is autosaved in the browser (localStorage). JSON import/export (paste or load a `.json` file).
+- Work is autosaved in the browser (localStorage). Export downloads a `.json` file; import accepts a pasted or uploaded `.json`.
 
 ## Project layout
 

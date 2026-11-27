@@ -1,6 +1,7 @@
 <script setup>
 import { onBeforeUnmount, onMounted, ref, watchEffect } from 'vue';
-import { state, boot, deleteSelection, clearSelection } from './store.js';
+import { state, boot, deleteSelection, clearSelection, exportPayload } from './store.js';
+import { downloadFile, slugify } from './lib/format.js';
 import AppHeader from './components/AppHeader.vue';
 import FlowWorkspace from './components/FlowWorkspace.vue';
 import GridView from './components/GridView.vue';
@@ -9,7 +10,17 @@ import ToastStack from './components/ToastStack.vue';
 
 boot();
 
-const jsonMode = ref(null); // 'export' | 'import' | null
+const jsonMode = ref(null); // 'import' while the import dialog is open
+
+// Export saves a .json file straight away; import opens the paste / file dialog.
+function onJson(mode) {
+  if (mode === 'export') {
+    const json = JSON.stringify(exportPayload(), null, 2);
+    downloadFile(`${slugify(state.title, 'recipe')}.json`, json, 'application/json;charset=utf-8');
+  } else {
+    jsonMode.value = mode;
+  }
+}
 
 watchEffect(() => {
   document.documentElement.lang = state.lang;
@@ -44,9 +55,9 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown));
 <template>
   <div class="app-shell">
     <AppHeader class="no-print" />
-    <FlowWorkspace v-show="state.activeTab === 'graph'" class="no-print" @json="jsonMode = $event" />
+    <FlowWorkspace v-show="state.activeTab === 'graph'" class="no-print" @json="onJson" />
     <GridView v-show="state.activeTab === 'grid'" class="grid-view" />
-    <JsonModal v-if="jsonMode" :mode="jsonMode" @close="jsonMode = null" />
+    <JsonModal v-if="jsonMode" @close="jsonMode = null" />
     <ToastStack />
   </div>
 </template>

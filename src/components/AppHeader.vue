@@ -1,9 +1,12 @@
 <script setup>
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import { FilePlus, Workflow, LayoutGrid } from 'lucide-vue-next';
-import { state, t, loadPreset, clearRecipe } from '../store.js';
+import { state, t, loadPreset } from '../store.js';
 import { PRESETS } from '../data/presets.js';
 import LangMenu from './LangMenu.vue';
+import NewRecipeModal from './NewRecipeModal.vue';
+
+const showNew = ref(false);
 
 const presetKeys = Object.keys(PRESETS);
 const presetValue = computed(() => state.currentPresetKey || '');
@@ -45,11 +48,12 @@ function onPresetChange(e) {
         <option v-if="!state.currentPresetKey" value="" disabled>{{ t('customRecipe') }}</option>
         <option v-for="key in presetKeys" :key="key" :value="key">{{ t('presetNames')[key] }}</option>
       </select>
-      <button type="button" class="knob new-btn" data-tip-pos="bottom" :data-tip="t('newBtn').replace(/^\+\s*/, '')" :aria-label="t('newBtn')" @click="clearRecipe">
+      <button type="button" class="knob new-btn" data-tip-pos="bottom" :data-tip="t('newBtn').replace(/^\+\s*/, '')" :aria-label="t('newBtn')" @click="showNew = true">
         <FilePlus :size="16" />
       </button>
       <LangMenu />
     </div>
+    <NewRecipeModal v-if="showNew" @close="showNew = false" />
   </header>
 </template>
 

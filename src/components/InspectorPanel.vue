@@ -114,12 +114,21 @@ function submitTag() {
         <div class="two-col">
           <label class="field">
             <span class="label">{{ t('fieldQty') }}</span>
-            <input v-model.number="qty" type="number" step="any" min="0" class="input strong tabular-nums" @blur="normalizeQty" />
+            <input
+              v-if="node.unit !== 'qb'"
+              v-model.number="qty"
+              type="number"
+              step="any"
+              min="0"
+              class="input strong tabular-nums"
+              @blur="normalizeQty"
+            />
+            <span v-else class="input qb-placeholder">—</span>
           </label>
           <label class="field">
             <span class="label">{{ t('fieldUnit') }}</span>
             <select v-model="unit" class="select">
-              <option v-for="u in unitOptions" :key="u" :value="u">{{ u }}</option>
+              <option v-for="u in unitOptions" :key="u" :value="u">{{ u === 'qb' ? t('unitQb') : u }}</option>
             </select>
           </label>
         </div>
@@ -255,6 +264,12 @@ function submitTag() {
 }
 .strong {
   font-weight: 600;
+}
+.qb-placeholder {
+  display: flex;
+  align-items: center;
+  color: var(--ink-3);
+  cursor: default;
 }
 .two-col {
   display: grid;

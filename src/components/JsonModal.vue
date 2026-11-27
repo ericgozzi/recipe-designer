@@ -1,29 +1,16 @@
 <script setup>
 import { onMounted, ref } from 'vue';
-import { Copy, X, Upload } from 'lucide-vue-next';
-import { t, exportPayload, importJson, showToast } from '../store.js';
+import { X, Upload } from 'lucide-vue-next';
+import { t, importJson, showToast } from '../store.js';
 
-const props = defineProps({ mode: { type: String, required: true } });
+// Import only: export downloads a .json file directly (see App.vue).
 const emit = defineEmits(['close']);
 
-const text = ref(props.mode === 'export' ? JSON.stringify(exportPayload(), null, 2) : '');
+const text = ref('');
 const area = ref(null);
 const fileInput = ref(null);
 
-onMounted(() => {
-  area.value?.focus();
-  if (props.mode === 'export') area.value?.select();
-});
-
-async function copy() {
-  try {
-    await navigator.clipboard.writeText(text.value);
-  } catch {
-    area.value.select();
-    document.execCommand('copy');
-  }
-  showToast(t('toastCopied'), 'success');
-}
+onMounted(() => area.value?.focus());
 
 function apply() {
   if (!text.value.trim()) return;
@@ -44,9 +31,9 @@ async function readFile(e) {
 
 <template>
   <div class="backdrop no-print" @pointerdown.self="emit('close')">
-    <div class="card" role="dialog" aria-modal="true" :aria-label="mode === 'export' ? t('exportJson') : t('importJson')">
+    <div class="card" role="dialog" aria-modal="true" :aria-label="t('importJson')">
       <header class="card-head">
-        <h3 class="panel-title">{{ mode === 'export' ? t('exportJson') : t('importJson') }}</h3>
+        <h3 class="panel-title">{{ t('importJson') }}</h3>
         <button type="button" class="knob knob-sm" :aria-label="t('close')" @click="emit('close')"><X :size="16" /></button>
       </header>
 
@@ -56,19 +43,15 @@ async function readFile(e) {
         rows="14"
         class="textarea code"
         spellcheck="false"
-        :readonly="mode === 'export'"
         placeholder='{ "title": "…", "nodes": [...], "edges": [...] }'
       ></textarea>
 
       <footer class="card-foot">
-        <button v-if="mode === 'export'" type="button" class="btn" @click="copy"><Copy :size="15" />{{ t('copyBtn') }}</button>
-        <template v-else>
-          <button type="button" class="btn" @click="fileInput.click()"><Upload :size="15" />.json</button>
-          <input ref="fileInput" type="file" accept=".json,application/json" hidden @change="readFile" />
-        </template>
+        <button type="button" class="btn" @click="fileInput.click()"><Upload :size="15" />.json</button>
+        <input ref="fileInput" type="file" accept=".json,application/json" hidden @change="readFile" />
         <div class="right">
           <button type="button" class="btn btn-flat" @click="emit('close')">{{ t('close') }}</button>
-          <button v-if="mode === 'import'" type="button" class="btn btn-primary" :disabled="!text.trim()" @click="apply">
+          <button type="button" class="btn btn-primary" :disabled="!text.trim()" @click="apply">
             {{ t('loadRecipe') }}
           </button>
         </div>

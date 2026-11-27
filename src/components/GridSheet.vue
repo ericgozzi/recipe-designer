@@ -1,6 +1,6 @@
 <script setup>
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
-import { state, t, servings, toggleCellCompleted, PAPER } from '../store.js';
+import { state, t, servings, toggleCellCompleted, amountLabel, PAPER } from '../store.js';
 import { compileGridMatrix } from '../lib/grid.js';
 import { formatQuantity } from '../lib/format.js';
 import PillTag from './PillTag.vue';
@@ -15,9 +15,6 @@ const yieldNum = computed(() => formatQuantity(servings() * state.yieldMultiplie
 
 function colTitle(c) {
   return c === 0 ? t('colIngredients') : `${t('colStage')} ${String(c).padStart(2, '0')}`;
-}
-function qty(node) {
-  return formatQuantity((Number(node.qty) || 0) * state.yieldMultiplier);
 }
 const activeSymbols = computed(() => SYMBOLS.filter((s) => state.symbols.includes(s.key)));
 const pad = (n) => String(n).padStart(2, '0');
@@ -188,7 +185,7 @@ onBeforeUnmount(() => {
                 <template v-else-if="cell.kind === 'node' && cell.node.type === 'ingredient'">
                   <div class="cell-head">
                     <span class="cell-label">{{ cell.node.name }}</span>
-                    <span class="cell-qty">{{ qty(cell.node) }}&#8239;{{ cell.node.unit }}</span>
+                    <span class="cell-qty">{{ amountLabel(cell.node) }}</span>
                   </div>
                   <div v-if="cell.node.note" class="cell-note">{{ cell.node.note }}</div>
                 </template>

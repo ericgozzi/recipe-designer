@@ -2,8 +2,7 @@
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import { ArrowRight, Plus } from 'lucide-vue-next';
 import { TYPE_ICON } from '../lib/typeIcons.js';
-import { state, t } from '../store.js';
-import { formatQuantity } from '../lib/format.js';
+import { t, amountLabel } from '../store.js';
 import PillTag from './PillTag.vue';
 
 const props = defineProps({
@@ -20,7 +19,7 @@ let observer = null;
 const kindLabel = computed(() =>
   props.node.type === 'ingredient' ? t('typeIngredient') : props.node.type === 'lavoration' ? t('typeLavoration') : t('typeOutput')
 );
-const qty = computed(() => formatQuantity((Number(props.node.qty) || 0) * state.yieldMultiplier));
+const amount = computed(() => amountLabel(props.node));
 
 function onPointerDown(e) {
   if (e.button !== 0) return;
@@ -49,7 +48,7 @@ onBeforeUnmount(() => observer?.disconnect());
   >
     <div class="node-head">
       <span class="kind" :title="kindLabel"><span class="led" :class="node.type"></span><component :is="TYPE_ICON[node.type]" :size="15" /></span>
-      <span v-if="node.type === 'ingredient'" class="qty">{{ qty }} {{ node.unit }}</span>
+      <span v-if="node.type === 'ingredient'" class="qty">{{ amount }}</span>
       <button v-else-if="node.type === 'lavoration'" type="button" class="next-btn" :title="t('nextBtn')" @click.stop="emit('next')">
         <Plus :size="11" :stroke-width="2.5" /><ArrowRight :size="12" />
       </button>
